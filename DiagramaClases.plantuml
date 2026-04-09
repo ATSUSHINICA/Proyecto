@@ -1,7 +1,7 @@
 @startuml
 
 abstract class Persona{
-    - String dni 
+    - String dni <<final>>
     - String nombreComp
     - LocalDateTime fechaNaci 
     - String sexo
@@ -12,7 +12,9 @@ abstract class Persona{
 
 class PersonalAdmin <<final>>{
 
-    + boolean manejoEstadiaPacientes()
+    + void registrarPaciente()
+    + void modificarDatosPaciente()
+    + void darAltaPaciente()
 
 }
 
@@ -23,6 +25,7 @@ class Paciente <<final>>{
     - int numeroTelefono
     - String correoElectronico
     - int telefonoEmergencia
+    - HistorialMedico historial
     
     + void MostrarDatos()
 
@@ -34,25 +37,30 @@ class HistorialMedico{
     - String alergias 
     - String intervencionesQuirurgicas
     - String EnfermedadesCronicas
-    - String Medicacion
-    - int NumeroPaciente 
+    - String Medicacion 
     
     + void mostrarHistorial()
-    
-
 }
 
-class Medico <<final>>{
-
+class Medico <<final>> {
+    + void consultarHistorial()
+    + void modificarHistorial()
+    + void añadirDiagnostico()
+    + void añadirTratamiento()
 }
 
 class AreaFacturacion{
-    
+    + void generarFactura()
+
 }
 
 
 Persona <|-- Paciente
 Persona <|-- Medico
 Persona <|-- PersonalAdmin
-HistorialMedico "1" <-- "1" Paciente : POSEE
+Paciente "1" --> "1" HistorialMedico : POSEE
+PersonalAdmin "1" --> "*" Paciente : REGISTRA
+Medico "*" --> "*" HistorialMedico : MODIFICA
+Medico "1" --> "*" AreaFacturacion : NOTIFICA
+Medico "1" --> "*" Paciente : ATIENDE
 @enduml
