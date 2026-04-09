@@ -1,0 +1,58 @@
+@startuml
+
+abstract class Persona{
+    - String dni 
+    - String nombreComp
+    - LocalDateTime fechaNaci 
+    - String sexo
+    ---
+    + void mostrarDatos()
+
+}
+
+class PersonalAdmin <<final>>{
+
+    + boolean manejoEstadiaPacientes()
+
+}
+
+class Paciente <<final>>{
+
+    - int numeroPaciente 
+    - String direccion 
+    - int numeroTelefono
+    - String correoElectronico
+    - int telefonoEmergencia
+    
+    + void MostrarDatos()
+
+}
+
+class HistorialMedico{
+
+    - String enfermedadesPrevias
+    - String alergias 
+    - String intervencionesQuirurgicas
+    - String EnfermedadesCronicas
+    - String Medicacion
+    - int NumeroPaciente 
+    
+    + void mostrarHistorial()
+    
+
+}
+
+class Medico <<final>>{
+
+}
+
+class AreaFacturacion{
+    
+}
+
+
+Persona <|-- Paciente
+Persona <|-- Medico
+Persona <|-- PersonalAdmin
+HistorialMedico "1" <-- "1" Paciente : POSEE
+@enduml
