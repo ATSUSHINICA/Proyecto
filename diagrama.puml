@@ -1,0 +1,109 @@
+@startuml diagrama.puml
+class Persona {
+    - dni : String
+    - nombreCompleto : String
+    - fechaNacimiento : Date
+    - sexo : Boolean
+    --
+    + actualizarDatos() : void
+}
+class PersonalAdministrativo {
+    - cargo : String
+    --
+    + verificarLlegadaPaciente() : void
+    + registrarPaciente() : void
+    + modificarDatosPaciente() : void
+    + asignarHistoriaClinica() : void
+    + gestionarBajaPaciente() : void
+    + cambiarMedicoOUnidad() : void
+}
+
+class Paciente {
+    - direccion : String
+    - telefono : int
+    - email : String
+    - telefonoEmergencia : int
+    - numeroHistoriaClinica : int
+    - activo : Boolean
+    --
+    + registrar() : void
+    + darDeAlta() : void
+    + darDeBaja() : void
+    + obtenerHistorialCompleto() : List
+}
+
+class Antecedente {
+    - tipo : String
+    - descripcion : String
+    - fechaRegistro : Date
+    - diagnosticoAsociado : String
+    --
+    + agregarAntecedente() : void
+    + actualizarAntecedente() : void
+}
+
+class HistoriaClinica {
+    - numeroHistoria : int
+    - fechaCreacion : Date
+    - estado : Boolean
+    --
+    + agregarRegistroMedico() : void
+    + cambiarEstadoHistoria() : void
+    + sugerirHistorial() : void
+}
+
+class Medico {
+    - especialidad : String
+    - colegiatura : String
+    --
+    + accederHistoriaClinica() : void
+    + agregarDiagnostico() : void
+    + agregarTratamiento() : void
+    + atenderPaciente() : void
+}
+
+class RegistroMedico {
+    - fechaConsulta : Date
+    - diagnostico : String
+    - tratamiento : String
+    - observaciones : String
+    --
+    + generarRegistro() : void
+    + notificarFacturacion() : void
+}
+
+class Facturacion {
+    - numeroFactura : int
+    - monto : Float
+    - estadoPago : String
+    --
+    + generarFactura() : void
+    + notificarProcedimientoPago() : void
+}
+
+' Relaciones de Persona
+Persona "1" <|-- "1" Paciente : desempeña 
+Persona "1" <|-- "1" PersonalAdministrativo : desempeña
+Persona "1" <|-- "1" Medico : desempeña
+
+' Relaciones de Paciente
+Paciente "1" *-- "*" Antecedente : contiene
+Paciente "1" *-- "1" HistoriaClinica : posee
+Paciente "1" -- "*" RegistroMedico : genera
+
+' Relaciones de Historia Clinica
+HistoriaClinica "1" *-- "0..*" RegistroMedico : contiene
+
+' Relaciones con Personal Administrativo
+PersonalAdministrativo "1" -- "0..*" Paciente : gestiona
+PersonalAdministrativo "1" -- "1" HistoriaClinica : accede
+
+' Relaciones con Médico
+Medico "1" -- "0..*" Paciente : atiende
+Medico "1" -- "0..*" RegistroMedico : realiza
+Medico "1" -- "1" HistoriaClinica : accede
+
+' Relación con Facturación
+RegistroMedico "1" <.. "0..1" Facturacion : genera
+
+@enduml
