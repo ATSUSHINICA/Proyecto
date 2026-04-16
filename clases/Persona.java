@@ -36,10 +36,6 @@ public abstract class Persona {
      */
     private String validarDni(String dni) {
 
-        if (dni == null) {
-            throw new IllegalArgumentException("El DNI no puede ser nulo");
-        }
-
         if (dni.length() != 9) {
             throw new IllegalArgumentException("Error de longitud al introducir el DNI");
         }
