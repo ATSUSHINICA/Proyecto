@@ -1,0 +1,80 @@
+@startuml
+class Paciente {
+  - dni: String
+  - nombreCompleto: String
+  - fechaNacimiento: Date
+  - sexo: String
+  - direccion: String
+  - numeroTelefonico: int
+  - correoElectronico: String
+  - contactoEmergencia: String
+  - estado: String
+  + actualizarDatosContacto()
+  + cambiarEstado()
+}
+
+class Medico {
+  - idMedico: String
+  - nombre: String
+  - especialidad: String
+  + accederHistoriaClinica()
+  + agregarDiagnostico()
+}
+
+class PersonalAdministrativo {
+  - idAdmin: String
+  - nombre: String
+  + verificarLlegada()
+  + ingresarPaciente()
+  + asignarNumeroHistoria()
+  + modificarDatos()
+  + gestionarBaja()
+}
+
+class RegistroMedico {
+  - idRegistro: String
+  - fechaRegistro: Date
+  - diagnostico: String
+  - tratamiento: String
+  - requierePago: boolean
+  + notificarFacturacion()
+}
+
+class HistoriaClinica {
+  - numeroHistoriaClinica: String
+  - enfermedadesPrevias: List<String>
+  - alergias: List<String>
+  - intervencionesQuirurgicas: List<String>
+  - enfermedadesCronicas: List<String>
+  - medicacion: List<String>
+  + agregarAntecedentes()
+  + cerrarRegistro()
+}
+
+class AreaFacturacion {
+  - numeroFactura: String
+  - importePago: double
+  - fechaFacturacion: Date
+  + generarFactura()
+}
+
+class Unidad {
+  - nombreUnidad: String
+  - ubicacion: String
+}
+
+' Relaciones principales del Paciente
+Paciente "1" -- "1" HistoriaClinica : posee >
+Paciente "0..*" -- "1" Unidad : asignado a >
+Paciente "0..*" -- "1" Medico : atendido por >
+
+' Composición
+HistoriaClinica "1" *-- "0..*" RegistroMedico : contiene >
+
+' Relaciones de gestión 
+PersonalAdministrativo "1" -- "0..*" Paciente : gestiona >
+Medico "1" -- "0..*" RegistroMedico : genera >
+
+' Integración 
+RegistroMedico "0..*" -- "0..1" AreaFacturacion : notifica a >
+@enduml
