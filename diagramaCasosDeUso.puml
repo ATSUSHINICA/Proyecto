@@ -1,0 +1,33 @@
+@startuml
+left to right direction
+
+actor "Personal Administrativo" as Admin
+actor "Médico" as Medico
+actor "Area de Facturación" as Facturacion
+
+rectangle "Sistema de Gestion Clínica" {
+ usecase (Verificar llegada del paciente) as UC1
+ usecase (Asignar numero de paciente) as UC2
+ usecase (Actualizar datos del paciente) as UC3
+ usecase (Gestionar cambio de medico/unidad) as UC4
+ usecase (Dar de alta al paciente) as UC5
+ usecase (Dar de baja al paciente) as UC6
+
+ usecase (Acceder al historial médico) as UC7
+ usecase (Agregar diagnóstico/tratamiento) as UC8
+ usecase (Notificar procedimiento de pago) as UC9
+
+Admin --> UC1
+UC1 .> UC2 : <<include>>
+Admin --> UC3
+Admin --> UC4
+Admin --> UC5
+Admin --> UC6
+
+Medico --> UC7
+Medico --> UC8
+UC9 .> UC8 : <<extend>>
+
+UC9 --> Facturacion
+}
+@enduml
