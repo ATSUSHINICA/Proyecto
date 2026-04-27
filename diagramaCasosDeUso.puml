@@ -1,0 +1,69 @@
+@startuml
+title Diagrama de casos de uso - Gestión Clínica (Atención al Paciente) con Autenticación
+hide empty description
+left to right direction
+
+actor "Personal Administrativo" as Admin
+actor "Médico" as Medico
+actor "Paciente" as Paciente
+actor "Sistema de Facturación" as Facturacion
+
+rectangle "Sistema de Gestión Clínica" {
+  
+  usecase "Iniciar sesión" as Login
+  usecase "Verificar credenciales" as Verify
+  usecase "Autorizar acciones según rol" as Auth
+  
+  usecase "Registrar ingreso del paciente" as UC1
+  usecase "Proporcionar datos personales" as UC2
+  usecase "Proporcionar antecedentes médicos" as UC3
+  usecase "Asignar número de historia clínica único" as UC4
+  usecase "Modificar datos personales" as UC5
+  usecase "Acceder a historia clínica digital" as UC6
+  usecase "Añadir diagnóstico o tratamiento" as UC7
+  usecase "Notificar al área de facturación" as UC8
+  usecase "Cambiar de médico o unidad" as UC9
+  usecase "Actualizar historial médico por cambio" as UC10
+  usecase "Sugerir historial para pacientes recurrentes" as UC11
+  usecase "Dar alta médica" as UC12
+  usecase "Cerrar registro de atención" as UC13
+  usecase "Dar baja administrativa" as UC14
+  usecase "Eliminar o suspender registro temporalmente" as UC15
+}
+
+Admin --> Login
+Medico --> Login
+Paciente --> UC2
+Paciente --> UC3
+Facturacion <-- UC8
+
+Login ..> Verify : <<include>>
+Verify ..> Auth : <<include>>
+
+Admin --> UC1
+Admin --> UC5
+Admin --> UC9
+Admin --> UC14
+
+Medico --> UC6
+Medico --> UC7
+Medico --> UC12
+
+UC1 ..> UC2 : <<include>>
+UC1 ..> UC3 : <<include>>
+UC1 ..> UC4 : <<include>>
+UC6 ..> UC7 : <<include>>
+UC7 ..> UC8 : <<include>>
+UC9 ..> UC10 : <<include>>
+UC6 ..> UC11 : <<extend>>
+UC12 ..> UC13 : <<include>>
+UC14 ..> UC15 : <<include>>
+
+
+UC5 -right-|> Auth
+UC9 -right-|> Auth
+UC14 -right-|> Auth
+UC6 -right-|> Auth
+UC7 -right-|> Auth
+
+@enduml
