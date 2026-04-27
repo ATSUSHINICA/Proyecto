@@ -1,0 +1,67 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Medico\n(verificado)" as MedicoV
+actor "PersonalAdministrativo\n(verificado)" as AdminV
+actor "AreaFacturación\n(verificado)" as FactuV
+actor "PersonalAdministrativo" as Admin
+actor "AreaFacturación" as Factu
+actor "Medico" as Medico
+
+rectangle "Sistema de Gestión Hospitalaria" {
+
+    usecase "Acceso y modificación al\nhistorial digital del paciente" as UC_Historial
+    usecase "Añadir diagnósticos\ny tratamientos" as UC_Diagnosticos
+    usecase "Sugerir historial\nautomáticamente" as UC_Sugerir
+    usecase "Gestiona admisión y\nacceso del paciente" as UC_Admision
+    usecase "Registro de pacientes" as UC_Registro
+    usecase "Utilizar datos personales\nde paciente" as UC_DatosPersonales
+    usecase "Registrar antecedentes\nmédicos" as UC_Antecedentes
+    usecase "Asignación de N°\nhistorial clínica" as UC_NumHistorial
+    usecase "Cambio de médico\no unidad" as UC_Cambio
+    usecase "Suspender registro\ntemporal" as UC_Suspender
+    usecase "Dar de baja administrativa\nal paciente" as UC_Baja
+    usecase "Modificar los datos\npersonales de pacientes" as UC_ModDatos
+    usecase "Notifica si se requiere\nprocedimientos de pago" as UC_Notifica
+    usecase "Ver notificaciones" as UC_Notificaciones
+
+}
+
+rectangle "Verificación de usuario" {
+    
+    usecase "Verificar usuario\npropio en el Sistema" as UC_Verificar
+}
+
+' Asociaciones con actores y casos de uso principales 
+MedicoV -- UC_Historial
+MedicoV -- UC_Diagnosticos
+AdminV -- UC_Admision
+AdminV -- UC_Historial
+AdminV -- UC_Cambio
+AdminV -- UC_Registro
+AdminV -- UC_ModDatos
+FactuV -- UC_Notificaciones
+
+
+' Asociaciones con actores no verificados y el caso de uso verificar 
+Admin -- UC_Verificar
+Factu -- UC_Verificar
+Medico -- UC_Verificar
+
+' Relaciones include
+UC_Historial ..> UC_Diagnosticos : <<include>>
+UC_Admision <.. UC_Historial : <<include>>
+UC_Registro ..> UC_DatosPersonales : <<include>>
+UC_Registro ..> UC_Antecedentes : <<include>>
+UC_Registro ..> UC_NumHistorial : <<include>>
+
+' Relaciones extend
+UC_Historial <.. UC_Sugerir : <<extend>>
+UC_Cambio <.. UC_Suspender : <<extend>>
+UC_Cambio <.. UC_Baja : <<extend>>
+UC_Cambio ..> UC_Historial : <<extend>>
+UC_Historial <.. UC_ModDatos : <<extend>> 
+UC_Diagnosticos <.. UC_Notifica : <<extend>>
+
+@enduml
