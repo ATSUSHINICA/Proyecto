@@ -1,0 +1,69 @@
+@startuml
+left to right direction
+
+actor "Personal Administrativo" as Admin
+actor Médico
+actor Paciente
+actor "Sistema de Facturación" as Facturacion
+
+rectangle "Sistema de Gestión Clínica (Atención al Paciente)" {
+  
+  (Iniciar sesión) as Login
+  (Verificar credenciales) as Verify
+  (Autorizar acciones según rol) as Auth
+  (Registrar ingreso del paciente) as UC1
+  (Proporcionar datos personales) as UC2
+  (Proporcionar antecedentes médicos) as UC3
+  (Asignar número de historia clínica único) as UC4
+  (Modificar datos personales) as UC5
+  (Acceder a historia clínica digital) as UC6
+  (Añadir diagnóstico o tratamiento) as UC7
+  (Notificar al área de facturación) as UC8
+  (Cambiar de médico o unidad) as UC9
+  (Actualizar historial médico por cambio) as UC10
+  (Sugerir historial para pacientes recurrentes) as UC11
+  (Dar alta médica) as UC12
+  (Cerrar registro de atención) as UC13
+  (Dar baja administrativa) as UC14
+  (Eliminar o suspender registro temporalmente) as UC15
+
+  Admin -- Login
+  Médico -- Login
+  
+  Paciente -- UC2
+  Paciente -- UC3
+  
+  Facturacion <-- UC8
+
+  Login ..> Verify : <<include>>
+  Verify ..> Auth : <<include>>
+
+  Admin -- UC1
+  Admin -- UC5
+  Admin -- UC9
+  Admin -- UC14
+
+  Médico -- UC6
+  Médico -- UC7
+  Médico -- UC12
+
+  UC1 ..> UC2 : <<include>>
+  UC1 ..> UC3 : <<include>>
+  UC1 ..> UC4 : <<include>>
+  
+  UC6 ..> UC7 : <<include>>
+  UC7 ..> UC8 : <<include>>
+  UC9 ..> UC10 : <<include>>
+  UC12 ..> UC13 : <<include>>
+  UC14 ..> UC15 : <<include>>
+  
+  UC6 <|-- UC11 : <<extend>>
+  
+  UC5 ..> Auth : <<include>>
+  UC9 ..> Auth : <<include>>
+  UC14 ..> Auth : <<include>>
+  UC6 ..> Auth : <<include>>
+  UC7 ..> Auth : <<include>>
+}
+
+@enduml
