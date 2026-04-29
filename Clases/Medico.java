@@ -11,7 +11,7 @@ import java.util.List;
 
 public final class Medico extends Persona {
     
-    private final String numeroColegiado;
+    private final int numeroColegiado;
     private String especialidad;
     
     /**
@@ -33,7 +33,7 @@ public final class Medico extends Persona {
      * @param numeroColegiado Número de colegiado (único e inmutable)
      * @param especialidad Especialidad médica (Cardiología, Pediatría, etc.)
      */
-    public Medico(String dni, String nombreCompleto, LocalDate fechaNacimiento, String sexo, String numeroColegiado, String especialidad) {
+    public Medico(String dni, String nombreCompleto, LocalDate fechaNacimiento, String sexo, int numeroColegiado, String especialidad) {
         // Llamo al constructor de la clase padre (Persona)
         super(dni, nombreCompleto, fechaNacimiento, sexo);
         this.numeroColegiado = numeroColegiado;
@@ -161,7 +161,7 @@ public final class Medico extends Persona {
     @Override
     public void mostrarDatos() {
         super.mostrarDatos();  // Primero muestro los datos de Persona
-        System.out.println("Número Colegiado: " + numeroColegiado);
+        System.out.println("Número Colegiado: " + );
         System.out.println("Especialidad: " + especialidad);
         System.out.println("Pacientes atendidos: " + pacientesAtendidos.size());
     }
