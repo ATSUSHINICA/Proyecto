@@ -178,7 +178,7 @@ public final class PersonalAdmin extends Persona {
     public int getIdEmpleado() { return idEmpleado; }
 }
 
-// ============ IMPLEMENTACIÓN PROPIA DE PILA ============
+// Implementación propia de la pila
 
 /**
  * Clase Pila para guardar las acciones del historial
@@ -270,7 +270,7 @@ class PilaAcciones {
     }
 }
 
-// ============ IMPLEMENTACIÓN PROPIA DE COLA CIRCULAR ============
+//Implementación propia de la cola circular
 
 /**
  * Clase Cola para pacientes en espera de registro
