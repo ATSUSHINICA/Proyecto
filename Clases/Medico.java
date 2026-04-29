@@ -11,7 +11,7 @@ import java.util.List;
 
 public final class Medico extends Persona {
     
-    private final int numeroColegiado;
+    private final int numeroColegiado;  // int en lugar de String (según diagrama actualizado)
     private String especialidad;
     
     /**
@@ -125,9 +125,9 @@ public final class Medico extends Persona {
      * @param numeroHistoria Número de historia clínica a buscar
      * @return El paciente encontrado, o null si no existe
      */
-    public Paciente buscarPacienteAtendido(String numeroHistoria) {
+    public Paciente buscarPacienteAtendido(int numeroHistoria) {
         for (Paciente p : pacientesAtendidos) {
-            if (p.getNumeroHistoriaClinica().equals(numeroHistoria)) {
+            if (p.getNumeroHistoriaClinica() == numeroHistoria) {
                 System.out.println("Paciente encontrado: " + p.getNombreCompleto());
                 return p;
             }
@@ -161,12 +161,12 @@ public final class Medico extends Persona {
     @Override
     public void mostrarDatos() {
         super.mostrarDatos();  // Primero muestro los datos de Persona
-        System.out.println("Número Colegiado: " + );
+        System.out.println("Número Colegiado: " + numeroColegiado);
         System.out.println("Especialidad: " + especialidad);
         System.out.println("Pacientes atendidos: " + pacientesAtendidos.size());
     }
     
     // Getters
-    public String getNumeroColegiado() { return numeroColegiado; }
+    public int getNumeroColegiado() { return numeroColegiado; }  
     public String getEspecialidad() { return especialidad; }
 }
