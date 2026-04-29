@@ -1,0 +1,79 @@
+@startuml
+
+abstract class Persona {
+    - String dni <<final>>
+    - String nombreCompleto
+    - LocalDate fechaNacimiento
+    - String sexo
+    ---
+    + void mostrarDatos()
+}
+
+class PersonalAdmin <<final>> {
+    - int idEmpleado <<final>>
+    ---
+    + void registrarPaciente(Paciente)
+    + void modificarDatosPaciente(Paciente)
+    + void darAltaPaciente(Paciente)
+    + void darBajaPaciente(Paciente)
+}
+
+class Medico <<final>> {
+    - int numeroColegiado <<final>>
+    - String especialidad
+    ---
+    + void consultarHistorial(Paciente)
+    + void añadirDiagnostico(Paciente)
+    + void añadirTratamiento(Paciente)
+}
+
+class Paciente {
+    - int numeroHistoriaClinica <<final>>
+    - String direccion
+    - int numeroTelefono
+    - String correoElectronico
+    - int telefonoEmergencia
+    - String estado
+    - boolean activo
+    - HistorialMedico historial
+    ---
+    + void mostrarDatos()
+}
+
+class HistorialMedico {
+    - String enfermedadesPrevias
+    - String alergias
+    - String intervencionesQuirurgicas
+    - String enfermedadesCronicas
+    - String medicacion
+    - String diagnosticos
+    - String tratamientos
+    ---
+    + void mostrarHistorial()
+}
+
+class AreaFacturacion {
+    - int idFactura <<final>>
+    - String concepto
+    - double importe
+    - LocalDate fechaFactura
+    ---
+    + void generarFactura(Paciente)
+}
+
+' Herencia
+Persona        <|-- PersonalAdmin
+Persona        <|-- Medico
+Persona        <|-- Paciente
+
+' Composicion
+Paciente "1" *-- "1" HistorialMedico : POSEE
+
+' Asociaciones
+PersonalAdmin   "1"  -->  "*" Paciente        : GESTIONA
+Medico          "1"  -->  "*" Paciente        : ATIENDE
+Medico          "1"  ..>  "*" HistorialMedico : MODIFICA
+Medico          "1"  ..>  "1"    AreaFacturacion : NOTIFICA
+AreaFacturacion "1"  -->  "*" Paciente        : FACTURA
+
+@enduml
