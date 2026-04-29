@@ -17,10 +17,10 @@ public class Paciente extends Persona {
     private String estado;      // Puede ser: ACTIVO, ALTA_MEDICA, BAJA_TEMPORAL, BAJA_PERMANENTE
     private boolean activo;     // true = está en el sistema, false = no está
     
-    /**
-     * COMPOSICIÓN: el paciente "tiene un" historial médico
-     * Si el paciente desaparece, su historial también (se borra con él)
-     * Por eso se crea aquí dentro y no fuera
+    /*
+     COMPOSICIÓN: el paciente "tiene un" historial médico
+     Si el paciente desaparece, su historial también (se borra con él)
+     Por eso se crea aquí dentro y no fuera
      */
     private HistorialMedico historial;
 
