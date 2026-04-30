@@ -1,6 +1,6 @@
-@startuml
+@startuml DiagramaDeClases.puml
 
-' Clases Principales
+' Clase Abstracta Persona
 
 abstract class Persona {
     - String dni <<final>>
@@ -15,6 +15,7 @@ abstract class Persona {
     + String getSexo()
 }
 
+' Clase PersonalAdmin
 class PersonalAdmin <<final>> {
     - int idEmpleado <<final>>
     - {static} ColaPacientes colaPacientesRegistro
@@ -29,6 +30,8 @@ class PersonalAdmin <<final>> {
     + {static} int getTamanoCola()
     + void mostrarDatos()
     + int getIdEmpleado()
+    
+    ' Clase Interna Pila
     --
     - class PilaAcciones {
         - static final int MAXIMO
@@ -44,6 +47,8 @@ class PersonalAdmin <<final>> {
         + void mostrarTodas()
         + int getTamano()
     }
+    
+    ' Clase Interna Cola
     --
     - class ColaPacientes {
         - static final int MAXIMO
@@ -62,6 +67,8 @@ class PersonalAdmin <<final>> {
     }
 }
 
+' Clase Medico
+
 class Medico <<final>> {
     - int numeroColegiado <<final>>
     - String especialidad
@@ -77,6 +84,8 @@ class Medico <<final>> {
     + String getEspecialidad()
     + void setEspecialidad(String)
 }
+
+' Clase Paciente
 
 class Paciente {
     - int numeroHistoriaClinica <<final>>
@@ -105,6 +114,8 @@ class Paciente {
     + HistorialMedico getHistorial()
 }
 
+' Clase Historial
+
 class HistorialMedico {
     - String enfermedadesPrevias
     - String alergias
@@ -125,9 +136,9 @@ class HistorialMedico {
     + List<String> buscarDiagnosticosPorPalabra(String)
     + int getTotalAntecedentes()
     + void mostrarHistorial()
-    + String toFileString()
-    + void fromFileString(String)
 }
+
+' Clase Area Facturación
 
 class AreaFacturacion {
     - int idFactura <<final>>
@@ -153,12 +164,13 @@ class AreaFacturacion {
     + LocalDate getFechaFactura()
 }
 
-' Excepción (Clase Separada)
+' Excepcion Personalizada (Clase Separada) 
 
 class EstadoPacienteException {
     - String mensaje
     ---
     + EstadoPacienteException(String)
+    + String getMessage()
 }
 
 ' Herencias
