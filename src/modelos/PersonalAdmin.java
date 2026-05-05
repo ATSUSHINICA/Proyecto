@@ -1,3 +1,4 @@
+package modelos;
 /**
  * Clase PersonalAdmin que hereda de Persona
  * El personal administrativo gestiona el registro, modificaciones y bajas de pacientes
