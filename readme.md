@@ -1,3 +1,0 @@
-# Proyecto 
-# Tareas
-# Integrantes

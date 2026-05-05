@@ -1,0 +1,47 @@
+@startuml
+title Gestion Clinica: Atencion al paciente
+
+[*] --> Admitido : Llegada del paciente
+
+state Admitido{
+    Admitido : entry / Verificar llegada 
+    Admitido : do / Comprobar si es recurrente
+}
+
+state Registrado{
+    Registrado : do / Solicitar datos personales y antecendetes médicos
+}
+
+state EnConsulta {
+    EnConsulta : do / Atender y agregar diagnostico y/o tratamiento
+}
+
+state EnTratamiento {
+    EnTratamiento : do / Aplicar tratamiento
+}
+
+state DeAlta {
+    DeAlta : entry / Actualizar historial clinico
+    DeAlta : do / Cerrar registro de atención
+}
+
+state DeBaja {
+    DeBaja : do / Eliminar o suspender registro de atención
+}
+
+Admitido --> Registrado : Paciente nuevo
+Admitido --> EnConsulta : Paciente recurrente
+
+Registrado --> EnConsulta : Datos completados
+
+EnConsulta --> EnConsulta : Modificar datos personales
+EnConsulta --> EnTratamiento : Diagnostico y tratamiento asignados
+
+EnTratamiento --> EnTratamiento : Cambio de medico o unidad - Actualizar historial
+EnTratamiento --> DeAlta : Tratamiento completado
+EnTratamiento --> DeBaja : Abandono de tratamiento o baja administrativa
+
+DeAlta --> [*]
+DeBaja --> [*]
+@enduml
+
