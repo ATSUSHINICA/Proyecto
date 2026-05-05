@@ -1,0 +1,58 @@
+@startuml
+title Gestion Clinica: Atencion al paciente
+
+|Paciente|
+:Llegar a la clinica;
+
+|Administrativo|
+:Admitir al paciente;
+
+if (¿Paciente recurrente?) then ([NO])
+    |Administrativo|
+    :Solicitar datos personales 
+    y antecedentes médicos;
+    
+    |Paciente|
+    :Proporcionar datos personales 
+    y antecedentes medicos;
+    
+    |Administrativo|
+    :Registrar al paciente;
+    :Asignar numero unico al paciente;
+else ([SI])
+    |Sistema|
+    :Sugerir historial clinico;
+    
+    |Administrativo|
+    :Actualizar datos si es necesario;
+end if;
+
+|Administrativo|
+if (¿Se requieren modificar datos?) then ([SI])
+    :Modificar datos personales;
+end if;
+
+|Medico|
+:Acceder al historial clinico;
+:Atender al paciente;
+:Agregar diagnostico y/o tratamiento;
+
+|Sistema|
+if (¿Pago necesario?) then ([SI])
+    :Notificar pago al área de facturación;
+end if;
+
+|Administrativo|
+if (¿Cambio de médico o unidad?) then ([SI])
+    :Actualizar historial;
+end if;
+
+if (¿Estado del paciente?) then ([ALTA])
+    :Actualizar historial clinico;
+    :Cerrar registro de atencion;
+    stop
+else ([BAJA])
+    :Eliminar o suspender registro de atencion;
+    stop
+end if;
+@enduml
