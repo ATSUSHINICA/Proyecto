@@ -195,7 +195,7 @@ public class Paciente extends Persona implements Serializable {
         System.out.println("Pertenece al sistema: " + (perteneceSistema ? "Sí" : "No"));
     }
     
-
+    
 
     //============================================= SETTERS Y GETTERS ==================================================
 

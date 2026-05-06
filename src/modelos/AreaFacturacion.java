@@ -2,7 +2,7 @@ package modelos;
 
 /*
 ===================================
-|           en revision           |
+|             REVISADO            |
 ===================================
 
 */
@@ -12,10 +12,10 @@ package modelos;
  * @author: Julia Amoros, Laura Leciñena, Alejandro Díaz 
  */
 
-import java.time.LocalDate;
-import java.util.*;
 import excepciones.EstadoPacienteException;
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.*;
 
 public class AreaFacturacion implements Serializable {
 
@@ -69,9 +69,9 @@ public class AreaFacturacion implements Serializable {
      * @param importe Cantidad a pagar (no puede ser negativa)
      * @param fechaFactura Fecha de emisión
      */
-    public AreaFacturacion(int idFactura, String concepto, double importe, LocalDate fechaFactura) {
+    public AreaFacturacion(String concepto, double importe, LocalDate fechaFactura) {
 
-        this.idFactura = validarIdFactura(idFactura);
+        this.idFactura = validarIdFactura(contadorFacturas++);
         this.concepto = validarConcepto(concepto);
         this.importe = validarImporte(importe);
         this.fechaFactura = validarFecha(fechaFactura);
@@ -207,23 +207,14 @@ public class AreaFacturacion implements Serializable {
      * @param numeroHistoria Número de historia clínica del paciente (int)
      * @return Lista de facturas del paciente (vacía si no tiene)
      */
+
     public static List<AreaFacturacion> buscarFacturasPorPaciente(int numeroHistoria) {
         // getOrDefault: si el paciente no tiene facturas, devuelvo una lista vacía (evito errores)
         return facturasPorPaciente.getOrDefault(numeroHistoria, new ArrayList<>());
     }
-    
+
     /**
-     * POLIMORFISMO (SOBRECARGA): notificar un procedimiento con importe por defecto (50€)
-     * 
-     * @param paciente Paciente al que se le notifica
-     * @param concepto Concepto del procedimiento
-     */
-    public static void notificarProcedimiento(Paciente paciente, String concepto) {
-        notificarProcedimiento(paciente, concepto, 50.0);
-    }
-    
-    /**
-     * POLIMORFISMO (SOBRECARGA): notificar un procedimiento con importe específico
+     * notificar un procedimiento con importe específico
      * 
      * @param paciente Paciente al que se le notifica
      * @param concepto Concepto del procedimiento
@@ -231,9 +222,8 @@ public class AreaFacturacion implements Serializable {
      */
     public static void notificarProcedimiento(Paciente paciente, String concepto, double importe) {
         try {
-            // Uso el contador estático para generar un ID único
-            int id = contadorFacturas++;
-            AreaFacturacion factura = new AreaFacturacion(id, concepto, importe, LocalDate.now());
+
+            AreaFacturacion factura = new AreaFacturacion(concepto, importe, LocalDate.now());
             factura.generarFactura(paciente);
         } catch (EstadoPacienteException e) {
             System.out.println("ERROR AL FACTURAR: " + e.getMessage());
@@ -253,7 +243,7 @@ public class AreaFacturacion implements Serializable {
         for (AreaFacturacion f : facturas) {
             System.out.println("  " + f);
         }
-        System.out.println("Total facturado: " + getFacturacionTotal() + " €");
+        
     }
     
     /**
@@ -270,7 +260,7 @@ public class AreaFacturacion implements Serializable {
         int hc = paciente.getNumeroHistoriaClinica();
         List<AreaFacturacion> facturasPaciente = facturasPorPaciente.getOrDefault(hc, new ArrayList<>());
         
-        System.out.println("\n=== FACTURAS DE " + paciente.getNombreCompleto() + " (HC: " + hc + ") ===");
+        System.out.println("\n=== FACTURAS DE " + paciente.getNombreCompleto() + " (NHC: " + hc + ") ===");
         if (facturasPaciente.isEmpty()) {
             System.out.println("No tiene facturas");
         } else {
@@ -284,6 +274,8 @@ public class AreaFacturacion implements Serializable {
     public String toString() {
         return idFactura + " | " + concepto + " | " + importe + "€ | " + fechaFactura;
     }
+
+    //======================================= GETTERS ==================================================
     
     // Getters
     public int getIdFactura() { return idFactura; }

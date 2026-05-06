@@ -1,4 +1,12 @@
 package modelos;
+
+/*
+===================================
+|            EN REVISION          |
+===================================
+
+*/
+
 /**
  * Clase que guarda todo el historial médico de un paciente
  * Esta clase es POSEE por Paciente (composición)
