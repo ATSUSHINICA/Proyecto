@@ -8,6 +8,7 @@ abstract class Persona {
     - LocalDate fechaNacimiento
     - String sexo
     --
+    + Persona(String, String, LocalDate, String)
     + void mostrarDatos()
     + String getDni()
     + String getNombreCompleto()
@@ -19,9 +20,10 @@ abstract class Persona {
 
 class PersonalAdmin <<final>> {
     - int idEmpleado
-    - ColaPacientes colaPacientesRegistro
-    - PilaAcciones historialAcciones
+    - static ColaPacientes colaPacientesRegistro
+    - static PilaAcciones historialAcciones
     --
+    + PersonalAdmin(String, String, LocalDate, String, int)
     + void registrarPaciente(Paciente)
     + Paciente atenderSiguientePaciente()
     + void modificarDatosPaciente(Paciente, String, int, String, int)
@@ -36,9 +38,9 @@ class PersonalAdmin <<final>> {
 ' Clase Interna Pila
 
 class PilaAcciones {
-    - int MAXIMO
     - String[] v
     - int cima
+    + static final int MAXIMO
     --
     + PilaAcciones(int)
     + PilaAcciones()
@@ -53,10 +55,10 @@ class PilaAcciones {
  ' Clase Interna Cola
 
 class ColaPacientes {
-    - int MAXIMO
     - Paciente[] v
     - int ini
     - int fin
+    + static final int MAXIMO
     --
     + ColaPacientes(int)
     + ColaPacientes()
@@ -75,6 +77,7 @@ class Medico <<final>> {
     - String especialidad
     - "List<Paciente>" pacientesAtendidos
     --
+    + Medico(String, String, LocalDate, String, int, String)
     + void consultarHistorial(Paciente)
     + void añadirDiagnostico(Paciente, String)
     + void añadirTratamiento(Paciente, String)
@@ -98,6 +101,7 @@ class Paciente {
     - boolean activo
     - HistorialMedico historial
     --
+    + Paciente(String, String, LocalDate, String, int, String, int, String, int)
     + void mostrarDatos()
     + void setDireccion(String)
     + void setNumeroTelefono(int)
@@ -126,6 +130,7 @@ class HistorialMedico {
     - String diagnosticos
     - String tratamientos
     --
+    + HistorialMedico()
     + void agregarEnfermedadPrevia(String)
     + void agregarAlergia(String)
     + void agregarIntervencion(String)
@@ -134,9 +139,14 @@ class HistorialMedico {
     + void agregarDiagnostico(String)
     + void agregarTratamiento(String)
     + boolean contieneAlergia(String)
-    + "List<String>" buscarDiagnosticosPorPalabra(String)
+    + List<String> buscarDiagnosticosPorPalabra(String)
     + int getTotalAntecedentes()
     + void mostrarHistorial()
+    - String agregarAString(String, String)
+    - int contarElementos(String)
+    - void imprimirElementos(String, String)
+    - boolean contieneElemento(String, String)
+    - List<String> buscarElementosPorPalabra(String, String)
 }
 
 ' Clase AreaFacturacion
@@ -146,32 +156,32 @@ class AreaFacturacion {
     - String concepto
     - double importe
     - LocalDate fechaFactura
+    - static List<AreaFacturacion> facturas
+    - static Map<Integer, List<AreaFacturacion>> facturasPorPaciente
+    - static int contadorFacturas
     --
-    - "List<AreaFacturacion>" facturas
-    - "Map<Integer, List<AreaFacturacion>>" facturasPorPaciente
-    - int contadorFacturas
-    --
-    + void generarFactura(Paciente)  ' throws EstadoPacienteException
-    + static double getFacturacionTotal()
-    + static "List<AreaFacturacion>" buscarFacturasPorPaciente(int)
-    + static void notificarProcedimiento(Paciente, String)
-    + static void notificarProcedimiento(Paciente, String, double)
-    + static void listarTodasFacturas()
-    + static void mostrarFacturasDePaciente(Paciente)
+    + AreaFacturacion(int, String, double, LocalDate)
+    + void generarFactura(Paciente) throws EstadoPacienteException
     + String toString()
     + int getIdFactura()
     + String getConcepto()
     + double getImporte()
     + LocalDate getFechaFactura()
+    + static double getFacturacionTotal()
+    + static List<AreaFacturacion> buscarFacturasPorPaciente(int)
+    + static void notificarProcedimiento(Paciente, String)
+    + static void notificarProcedimiento(Paciente, String, double)
+    + static void listarTodasFacturas()
+    + static void mostrarFacturasDePaciente(Paciente)
 }
 
 ' Excepcion Personalizada (Clase Separada) 
 
 class EstadoPacienteException {
-    - String mensaje
     --
     + EstadoPacienteException(String)
     + String getMessage()
+    + String getMensajeOriginal()
 }
 
 ' Herencias
