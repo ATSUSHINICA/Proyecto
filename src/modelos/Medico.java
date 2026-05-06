@@ -86,7 +86,7 @@ public final class Medico extends Persona implements Serializable {
     private String validarEspecialidad(String especialidad) {
 
         if (especialidad == null) {
-            throw new IllegalArgumentException("La especialidad no puede ser nula");
+            throw new NullPointerException("La especialidad no puede ser nula");
         }
 
         if (especialidad.length() == 0 ) {

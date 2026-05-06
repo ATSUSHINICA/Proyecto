@@ -103,7 +103,7 @@ public class AreaFacturacion implements Serializable {
     private String validarConcepto(String concepto) {
 
         if (concepto == null) {
-            throw new IllegalArgumentException("El concepto no puede ser nulo");
+            throw new NullPointerException("El concepto no puede ser nulo");
         }
 
         boolean soloEspacios = true;
@@ -148,7 +148,7 @@ public class AreaFacturacion implements Serializable {
     private LocalDate validarFecha(LocalDate fechaFactura) {
 
         if (fechaFactura == null) {
-            throw new IllegalArgumentException("La fecha de la factura no puede ser nula");
+            throw new NullPointerException("La fecha de la factura no puede ser nula");
         }
 
         if (fechaFactura.isAfter(LocalDate.now())) {

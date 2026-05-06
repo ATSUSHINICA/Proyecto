@@ -104,7 +104,7 @@ public final class PersonalAdmin extends Persona implements Serializable {
 
         // validar que el paciente no es nulo 
         if (paciente == null) {
-            throw new IllegalArgumentException("El paciente no puede ser nulo");
+            throw new NullPointerException("El paciente no puede ser nulo");
         }
         
         // Uso los setters del paciente para cambiar sus datos PERSONALES
@@ -122,7 +122,7 @@ public final class PersonalAdmin extends Persona implements Serializable {
      */
     public void darAltaPaciente(Paciente paciente) {
         if (paciente == null) {
-            throw new IllegalArgumentException("El paciente no puede ser nulo");
+            throw new NullPointerException("El paciente no puede ser nulo");
         }
         
         paciente.setEstado("ALTA_MEDICA");
@@ -138,7 +138,7 @@ public final class PersonalAdmin extends Persona implements Serializable {
      */
     public void darBajaPermanentePaciente(Paciente paciente) {
         if (paciente == null) {
-            throw new IllegalArgumentException("El paciente no puede ser nulo");
+            throw new NullPointerException("El paciente no puede ser nulo");
         }
         
             paciente.setEstado("BAJA_PERMANENTE");
@@ -155,7 +155,7 @@ public final class PersonalAdmin extends Persona implements Serializable {
      */
     public void darBajatemporalPaciente(Paciente paciente) {
         if (paciente == null) {
-            throw new IllegalArgumentException("El paciente no puede ser nulo");
+            throw new NullPointerException("El paciente no puede ser nulo");
         }
 
             paciente.setEstado("BAJA_TEMPORAL");

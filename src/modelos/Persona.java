@@ -48,7 +48,7 @@ public abstract class Persona implements Serializable {
     private String validarDni(String dni) {
 
         if (dni == null) {
-            throw new IllegalArgumentException("El DNI no puede ser nulo");
+            throw new NullPointerException("El DNI no puede ser nulo");
         }
 
         if (dni.length() != 9) {
@@ -81,7 +81,7 @@ public abstract class Persona implements Serializable {
 
         /* Esta excepción evita que el nombre sea nulo o esté vacío */
         if (nombreCompleto == null ) {
-            throw new IllegalArgumentException("El nombre no puede ser nulo");
+            throw new NullPointerException("El nombre no puede ser nulo");
         }
 
         return nombreCompleto;
@@ -96,7 +96,7 @@ public abstract class Persona implements Serializable {
 
         /* Esta excepción evita que la fecha de nacimiento sea nula */
         if (fechaNacimiento == null) {
-            throw new IllegalArgumentException("La fecha de nacimiento no puede ser nula");
+            throw new NullPointerException("La fecha de nacimiento no puede ser nula");
         }
 
         /* Esta excepción no permite colocar fechas que sean futuras */

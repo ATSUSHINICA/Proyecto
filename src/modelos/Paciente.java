@@ -14,7 +14,6 @@ package modelos;
  * @since 2026/04/16
  */
 
-import excepciones.EstadoPacienteException;
 import java.io.Serializable;
 import java.time.LocalDate;
 
@@ -83,7 +82,7 @@ public class Paciente extends Persona implements Serializable {
     private String validarDireccion(String direccion){
         
         if (direccion == null){
-            throw new IllegalArgumentException("Él campo de dirección no puede ser nula");
+            throw new NullPointerException("Él campo de dirección no puede ser nula");
         }
         
         return direccion;
@@ -132,7 +131,7 @@ public class Paciente extends Persona implements Serializable {
      */
     private String validarCorreo(String correo) {
         if (correo == null) {
-            throw new IllegalArgumentException("El correo electrónico no puede estar vacío");
+            throw new NullPointerException("El correo electrónico no puede estar vacío");
         }
 
         boolean error = true;
@@ -160,7 +159,7 @@ public class Paciente extends Persona implements Serializable {
      */
     private String validarEstado(String estado) {
         if (estado == null) {
-            throw new EstadoPacienteException("El estado no puede ser nulo");
+            throw new NullPointerException("El estado no puede ser nulo");
         }
 
         // En caso de cumplir con una de las opciones que se muestra devolvera el estado 
