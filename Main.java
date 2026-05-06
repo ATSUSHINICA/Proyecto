@@ -31,10 +31,10 @@
  */
 
 import excepciones.EstadoPacienteException;
-import modelos.*;
 import java.io.*;
 import java.time.LocalDate;
 import java.util.*;
+import modelos.*;
 
 
 public class Main {
@@ -53,6 +53,7 @@ public class Main {
     private static List<Paciente>       pacientes      = new ArrayList<>();
     private static List<Medico>         medicos        = new ArrayList<>();
     private static List<PersonalAdmin>  admins         = new ArrayList<>();
+    private static List<AreaFacturacion>    facturacion = new ArrayList<>();
 
     // ============================================================================================
     //                              RUTAS DE LOS FICHEROS
@@ -60,28 +61,17 @@ public class Main {
 
     /*
         Los ficheros .dat son binarios serializados (ObjectOutputStream / ObjectInputStream)
-        Se guardan en la carpeta "datos/" dentro del proyecto
+        Se guardarám en la carpeta "datos/" dentro del proyecto, dentro de cada archivo se guardara la información 
+        correspondiente de los usuarios creados ya dentro del sistema.
+
+        Es static porque se utiliza dentro del propio main y final porque será la dirección en donde permaneceran los datos 
     */
 
     private static final String RUTA_PACIENTES = "datos/pacientes.dat";
     private static final String RUTA_MEDICOS   = "datos/medicos.dat";
     private static final String RUTA_ADMINS    = "datos/admins.dat";
+    private static final String RUTA_FACTURACION = "datos/facturacion.dat";
 
-    // ============================================================================================
-    //                              CONTADOR GLOBAL DE HISTORIA CLÍNICA
-    // ============================================================================================
-
-    /*
-        Este contador lleva la cuenta del último número de historia clínica asignado.
-        Se persiste en un fichero aparte para no repetir números aunque se reinicie el sistema.
-        
-        ¿Por qué estático?
-        - Todos los pacientes comparten el mismo contador global
-        - Si no fuera estático, cada instancia del Main tendría el suyo propio
-    */
-
-    private static int contadorHistoriaClinica = 1;
-    private static final String RUTA_CONTADOR  = "datos/contador.dat";
 
     // ============================================================================================
     //                              CREDENCIALES DE ACCESO (SIMULADAS)
@@ -90,16 +80,18 @@ public class Main {
     /*
         Para este subsistema, los usuarios y contraseñas se guardan en un HashMap estático.
         La clave es el usuario y el valor es un array de dos posiciones:
+            
             [0] = contraseña
+            
             [1] = rol (MEDICO / ADMIN / FACTURACION)
+            Todo esto dentro del Array que será la informacion que acompaña la clave 
         
-        En un sistema real esto estaría en base de datos con contraseñas cifradas.
-        Para el proyecto, lo dejamos así de forma simplificada.
+        En un sistema real esto estaría en base de datos pero aún no lo hemos visto en clases.
     */
 
     private static final Map<String, String[]> usuariosSistema = new HashMap<>();
 
-    // Scanner global para toda la clase
+    // Scanner global para toda la clase entera, incluyendo metodos fuera del main
     private static Scanner scanner = new Scanner(System.in);
 
 
@@ -109,10 +101,11 @@ public class Main {
 
     public static void main(String[] args) {
 
-        // Creamos la carpeta de datos si no existe
+        // Creamos la carpeta de datos si no existe al iniciar el programa
+
         new File("datos").mkdirs();
 
-        // Inicializamos los usuarios del sistema (credenciales hardcodeadas)
+        // Inicializamos los usuarios del sistema 
         inicializarUsuarios();
 
         // Cargamos todos los datos persistidos de fichero
@@ -168,20 +161,19 @@ public class Main {
     // ============================================================================================
 
     /**
-     * Carga los usuarios predefinidos del sistema.
+     * Carga los usuarios que hemos colocado por defecto en nuestro sistema cada vez que inicia la 
+     * ejecución del sistema
      * 
      * Formato: usuariosSistema.put("usuario", new String[]{"contraseña", "ROL"})
      * 
      * Roles posibles: MEDICO, ADMIN, FACTURACION
-     * 
-     * NOTA: En un sistema real estas credenciales estarían cifradas y en base de datos.
-     *       Para este proyecto académico las dejamos aquí como constantes.
      */
+
     private static void inicializarUsuarios() {
 
         // Médicos del sistema
         usuariosSistema.put("dr.garcia",    new String[]{"garcia1234",  "MEDICO"});
-        usuariosSistema.put("dr.martinez",  new String[]{"martinez123", "MEDICO"});
+        usuariosSistema.put("dr.martinez",  new String[]{"martinez1234", "MEDICO"});
 
         // Personal administrativo
         usuariosSistema.put("admin.lopez",  new String[]{"lopez1234",   "ADMIN"});
@@ -203,7 +195,7 @@ public class Main {
     private static void mostrarBienvenida() {
         System.out.println("=============================================================");
         System.out.println("         SISTEMA DE GESTIÓN CLÍNICA AL PACIENTE             ");
-        System.out.println("         I.E.S Pablo Serrano - 1º DAM 2026                  ");
+        System.out.println("                    I.E.S Pablo Serrano                     ");
         System.out.println("=============================================================");
         System.out.println("  Autores: Julia Amoros, Laura Leciñena, Alejandro Díaz     ");
         System.out.println("=============================================================\n");
@@ -1295,16 +1287,6 @@ public class Main {
         }
     }
 
-    /**
-     * Guarda el contador de historia clínica en fichero.
-     */
-    private static void guardarContador() {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(RUTA_CONTADOR))) {
-            oos.writeObject(contadorHistoriaClinica);
-        } catch (IOException e) {
-            System.out.println("[AVISO] No se pudo guardar el contador de HC: " + e.getMessage());
-        }
-    }
 
     /**
      * Carga todos los datos desde los ficheros al arrancar el sistema.
@@ -1312,7 +1294,7 @@ public class Main {
      * Si los ficheros no existen (primera ejecución), inicializa los datos de ejemplo
      * para que el sistema no arranque completamente vacío.
      */
-    @SuppressWarnings("unchecked")
+    
     private static void cargarDatos() {
 
         // Intentamos cargar cada fichero
@@ -1362,21 +1344,6 @@ public class Main {
         }
     }
 
-    /**
-     * Carga el contador de historia clínica desde fichero.
-     * Si no existe, lo deja en 1 (valor por defecto).
-     */
-    private static void cargarContador() {
-        File fichero = new File(RUTA_CONTADOR);
-
-        if (!fichero.exists()) return;
-
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(fichero))) {
-            contadorHistoriaClinica = (int) ois.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            // Si hay error, simplemente usamos el valor por defecto
-        }
-    }
 
     /**
      * Inicializa datos de ejemplo para la primera ejecución del sistema.
