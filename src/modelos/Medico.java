@@ -1,26 +1,32 @@
+package modelos;
+/*
+===================================
+|             REVISADA            |
+===================================
+
+*/
+
+
 /**
  * Clase Medico que hereda de Persona
  * Un médico es una persona con atributos específicos: número de colegiado y especialidad
  * 
  * @author: Julia Amoros, Laura Leciñena, Alejandro Díaz 
+ * @since 2026/04/16
  */
 
+import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
-public final class Medico extends Persona {
+public final class Medico extends Persona implements Serializable {
+
+    private static final long serialVersionUID = 3L;
     
     private final int numeroColegiado;  // int en lugar de String (según diagrama actualizado)
     private String especialidad;
     
-    /**
-     * ArrayList para guardar a los pacientes que ha atendido este médico
-     * Uso ArrayList porque es dinámico: crece solo cuando añado pacientes
-     * No sé cuántos pacientes va a atender en total, así que no puedo usar un array normal de tamaño fijo
-     */
-    private List<Paciente> pacientesAtendidos = new ArrayList<>();
 
+    //===================================== CONSTRUCTOR ===================================================
     /**
      * Constructor del médico
      * Llama al constructor de Persona con super() para heredar dni, nombre, fecha y sexo
@@ -34,17 +40,72 @@ public final class Medico extends Persona {
      * @param especialidad Especialidad médica (Cardiología, Pediatría, etc.)
      */
     public Medico(String dni, String nombreCompleto, LocalDate fechaNacimiento, String sexo, int numeroColegiado, String especialidad) {
+
         // Llamo al constructor de la clase padre (Persona)
+
         super(dni, nombreCompleto, fechaNacimiento, sexo);
-        this.numeroColegiado = numeroColegiado;
-        this.especialidad = especialidad;
+        this.numeroColegiado = validarNumeroColegiado(numeroColegiado);
+        this.especialidad = validarEspecialidad(especialidad);
     }
+
+    //=========================================== METODOS DE VALIDACIÓN PRIVADOS =======================================
+    
+    /**
+     * Valida que el número de colegiado tenga 9 dígitos y solo contenga números.
+     * @param numeroColegiado Número de colegiado
+     * @return El número validado
+     */
+
+    private int validarNumeroColegiado(int numeroColegiado) {
+
+        // Convertimos a String para poder analizarlo carácter a carácter
+        String aux = String.valueOf(numeroColegiado);
+
+        // Debe tener exactamente 9 dígitos
+        if (aux.length() != 9) {
+            throw new IllegalArgumentException("El número de colegiado debe tener 9 dígitos");
+        }
+
+        // Comprobamos que todos los caracteres sean numéricos
+        for (int i = 0; i < aux.length(); i++) {
+
+            if (aux.charAt(i) < '0' || aux.charAt(i) > '9') {
+                throw new IllegalArgumentException("El número de colegiado solo puede contener números");
+            }
+        }
+
+        return numeroColegiado;
+    }
+
+    /**
+     * Valida la especialidad del médico.
+     * No puede ser nula, ni vacía, ni contener solo espacios.
+     * @param especialidad Especialidad médica
+     * @return La especialidad validada
+     */
+    private String validarEspecialidad(String especialidad) {
+
+        if (especialidad == null) {
+            throw new NullPointerException("La especialidad no puede ser nula");
+        }
+
+        if (especialidad.length() == 0 ) {
+            throw new IllegalArgumentException("La especialidad no puede estar vacía");
+        }
+
+        return especialidad;
+    }
+
+
+
+    //======================================== MÉTODOS PÚBLICOS =========================================================
     
     /**
      * Consultar el historial clínico completo de un paciente
      * 
      * @param paciente El paciente a consultar
      */
+
     public void consultarHistorial(Paciente paciente) {
         // Valido que el paciente no sea nulo
         if (paciente == null) {
@@ -66,12 +127,13 @@ public final class Medico extends Persona {
      * @param paciente El paciente a diagnosticar
      * @param diagnostico El diagnóstico a añadir
      */
+
     public void añadirDiagnostico(Paciente paciente, String diagnostico) {
         // Valido que los datos no sean nulos o vacíos
         if (paciente == null) {
             throw new IllegalArgumentException("El paciente no puede ser nulo");
         }
-        if (diagnostico == null || diagnostico.isEmpty()) {
+        if (diagnostico == null) {
             throw new IllegalArgumentException("El diagnóstico no puede estar vacío");
         }
         
@@ -79,12 +141,6 @@ public final class Medico extends Persona {
         paciente.getHistorial().agregarDiagnostico(diagnostico);
         System.out.println("Diagnóstico añadido: " + diagnostico);
         
-        /**
-         * NOTIFICACIÓN A FACTURACIÓN
-         * Cada vez que se añade un diagnóstico, se avisa a facturación automáticamente
-         * Es una operación agregada: el sistema integra la atención médica con la facturación
-         */
-        AreaFacturacion.notificarProcedimiento(paciente, "Consulta médica con diagnóstico", 50.0);
     }
     
     /**
@@ -98,62 +154,15 @@ public final class Medico extends Persona {
         if (paciente == null) {
             throw new IllegalArgumentException("El paciente no puede ser nulo");
         }
-        if (tratamiento == null || tratamiento.isEmpty()) {
+        if (tratamiento == null) {
             throw new IllegalArgumentException("El tratamiento no puede estar vacío");
         }
         
         // Añado el tratamiento al historial del paciente
         paciente.getHistorial().agregarTratamiento(tratamiento);
         System.out.println("Tratamiento añadido: " + tratamiento);
-        
-        /**
-         * Añado el paciente a la lista de atendidos por este médico
-         * Verifico si ya existe para no duplicarlo
-         */
-        if (!pacientesAtendidos.contains(paciente)) {
-            pacientesAtendidos.add(paciente);
-            System.out.println("Paciente añadido a lista de atendidos por este médico");
-        }
     }
-    
-    /**
-     * BÚSQUEDA EN VECTORES (ArrayList)
-     * Buscar un paciente por su número de historia clínica en la lista de atendidos
-     * Recorro toda la lista elemento por elemento hasta encontrar la coincidencia
-     * Si no lo encuentra, devuelve null
-     * 
-     * @param numeroHistoria Número de historia clínica a buscar
-     * @return El paciente encontrado, o null si no existe
-     */
-    public Paciente buscarPacienteAtendido(int numeroHistoria) {
-        for (Paciente p : pacientesAtendidos) {
-            if (p.getNumeroHistoriaClinica() == numeroHistoria) {
-                System.out.println("Paciente encontrado: " + p.getNombreCompleto());
-                return p;
-            }
-        }
-        System.out.println("Paciente con HC " + numeroHistoria + " NO encontrado en la lista de atendidos");
-        return null;  // Devuelve null si no lo encuentra
-    }
-    
-    /**
-     * Mostrar todos los pacientes que ha atendido este médico
-     */
-    public void listarPacientesAtendidos() {
-        System.out.println("\n=== PACIENTES ATENDIDOS POR " + this.getNombreCompleto() + " ===");
-        
-        if (pacientesAtendidos.isEmpty()) {
-            System.out.println("No ha atendido a ningún paciente todavía");
-            return;
-        }
-        
-        // Recorro la lista y muestro cada paciente
-        for (Paciente p : pacientesAtendidos) {
-            System.out.println("- " + p.getNombreCompleto() + " (HC: " + p.getNumeroHistoriaClinica() + ")");
-        }
-        System.out.println("Total de pacientes atendidos: " + pacientesAtendidos.size());
-    }
-    
+
     /**
      * Sobrescribo el método mostrarDatos() de Persona
      * Muestro los datos de persona + los datos específicos de médico
@@ -163,9 +172,10 @@ public final class Medico extends Persona {
         super.mostrarDatos();  // Primero muestro los datos de Persona
         System.out.println("Número Colegiado: " + numeroColegiado);
         System.out.println("Especialidad: " + especialidad);
-        System.out.println("Pacientes atendidos: " + pacientesAtendidos.size());
     }
     
+    //============================================= GETTERS Y SETTERS ==========================================
+
     // Getters
     public int getNumeroColegiado() { return numeroColegiado; }  
     public String getEspecialidad() { return especialidad; }

@@ -1,13 +1,25 @@
+package modelos;
+
+/*
+===================================
+|             REVISADO            |
+===================================
+
+*/
 /**
  * Clase que maneja todas las facturas del hospital
  * 
  * @author: Julia Amoros, Laura Leciñena, Alejandro Díaz 
  */
 
+import excepciones.EstadoPacienteException;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.*;
 
-public class AreaFacturacion {
+public class AreaFacturacion implements Serializable {
+
+    private static final long serialVersionUID = 4L;
     
     private final int idFactura;
     private String concepto;
@@ -46,6 +58,9 @@ public class AreaFacturacion {
      */
     private static int contadorFacturas = 1;
 
+
+    //============================================== CONSTRUCTOR =====================================================
+
     /**
      * Constructor de factura
      * 
@@ -54,16 +69,95 @@ public class AreaFacturacion {
      * @param importe Cantidad a pagar (no puede ser negativa)
      * @param fechaFactura Fecha de emisión
      */
-    public AreaFacturacion(int idFactura, String concepto, double importe, LocalDate fechaFactura) {
-        if (importe < 0) {
-            throw new IllegalArgumentException("El importe no puede ser negativo");
-        }
-        this.idFactura = idFactura;
-        this.concepto = concepto;
-        this.importe = importe;
-        this.fechaFactura = fechaFactura;
+    public AreaFacturacion(String concepto, double importe, LocalDate fechaFactura) {
+
+        this.idFactura = validarIdFactura(contadorFacturas++);
+        this.concepto = validarConcepto(concepto);
+        this.importe = validarImporte(importe);
+        this.fechaFactura = validarFecha(fechaFactura);
     }
     
+    //============================================= METODOS DE VALIDACION PRIVADOS =============================================
+
+    /**
+     * Valida que el ID de factura sea mayor que 0.
+     * @param idFactura Identificador único de la factura
+     * @return idFactura validado
+     */
+
+    private int validarIdFactura(int idFactura) {
+
+        if (idFactura <= 0) {
+            throw new IllegalArgumentException("El ID de la factura debe ser mayor que 0");
+        }
+
+        return idFactura;
+    }
+
+    /**
+     * Valida que el concepto no sea nulo ni vacío.
+     * @param concepto Concepto de la factura
+     * @return concepto validado
+     */
+
+    private String validarConcepto(String concepto) {
+
+        if (concepto == null) {
+            throw new NullPointerException("El concepto no puede ser nulo");
+        }
+
+        boolean soloEspacios = true;
+
+        /* Recorremos carácter a carácter para comprobar si hay algo distinto de espacio */
+
+        for (int i = 0; i < concepto.length(); i++) {
+            if (concepto.charAt(i) != ' ') {
+                soloEspacios = false;
+            }
+        }
+
+        if (concepto.length() == 0 || soloEspacios) {
+            throw new IllegalArgumentException("El concepto no puede estar vacío");
+        }
+
+        return concepto;
+    }
+
+    /**
+     * Valida que el importe sea mayor que 0.
+     * @param importe Cantidad económica de la factura
+     * @return importe validado
+     */
+
+    private double validarImporte(double importe) {
+
+        if (importe <= 0) {
+            throw new IllegalArgumentException("El importe debe ser mayor que 0");
+        }
+
+        return importe;
+    }
+
+
+    /**
+     * Valida que la fecha no sea nula ni futura.
+     * @param fechaFactura Fecha de emisión de la factura
+     * @return fechaFactura validada
+     */
+
+    private LocalDate validarFecha(LocalDate fechaFactura) {
+
+        if (fechaFactura == null) {
+            throw new NullPointerException("La fecha de la factura no puede ser nula");
+        }
+
+        if (fechaFactura.isAfter(LocalDate.now())) {
+                throw new IllegalArgumentException("La fecha de la factura no puede ser futura");
+            }
+        return fechaFactura;
+    }
+
+    //============================================= METODOS PUBLICOS ======================================================== 
     /**
      * Generar una factura y asociarla al paciente
      * 
@@ -71,6 +165,7 @@ public class AreaFacturacion {
      * @throws EstadoPacienteException Si el paciente está de baja temporal
      */
     public void generarFactura(Paciente paciente) throws EstadoPacienteException {
+
         if (paciente == null) {
             throw new IllegalArgumentException("El paciente no puede ser nulo");
         }
@@ -79,6 +174,12 @@ public class AreaFacturacion {
         if ("BAJA_TEMPORAL".equals(paciente.getEstado())) {
             throw new EstadoPacienteException("No se puede facturar a un paciente de baja temporal");
         }
+
+        // VALIDACIÓN: No se puede facturar a un paciente de baja permanente
+        if ("BAJA_PERMANENTE".equals(paciente.getEstado())) {
+            throw new EstadoPacienteException("No se puede facturar a un paciente de baja permanente");
+        }
+        
         
         // Añado la factura a la lista general (static)
         facturas.add(this);
@@ -100,42 +201,20 @@ public class AreaFacturacion {
     }
     
     /**
-     * OPERACIÓN AGREGADA: sumar todas las facturas del sistema
-     * 
-     * @return Total facturado
-     */
-    public static double getFacturacionTotal() {
-        double total = 0;
-        for (AreaFacturacion f : facturas) {
-            total += f.importe;
-        }
-        return total;
-    }
-    
-    /**
      * BÚSQUEDA RÁPIDA usando el mapa estático
      * Busco las facturas de un paciente específico por su número de historia
      * 
      * @param numeroHistoria Número de historia clínica del paciente (int)
      * @return Lista de facturas del paciente (vacía si no tiene)
      */
+
     public static List<AreaFacturacion> buscarFacturasPorPaciente(int numeroHistoria) {
         // getOrDefault: si el paciente no tiene facturas, devuelvo una lista vacía (evito errores)
         return facturasPorPaciente.getOrDefault(numeroHistoria, new ArrayList<>());
     }
-    
+
     /**
-     * POLIMORFISMO (SOBRECARGA): notificar un procedimiento con importe por defecto (50€)
-     * 
-     * @param paciente Paciente al que se le notifica
-     * @param concepto Concepto del procedimiento
-     */
-    public static void notificarProcedimiento(Paciente paciente, String concepto) {
-        notificarProcedimiento(paciente, concepto, 50.0);
-    }
-    
-    /**
-     * POLIMORFISMO (SOBRECARGA): notificar un procedimiento con importe específico
+     * notificar un procedimiento con importe específico
      * 
      * @param paciente Paciente al que se le notifica
      * @param concepto Concepto del procedimiento
@@ -143,9 +222,8 @@ public class AreaFacturacion {
      */
     public static void notificarProcedimiento(Paciente paciente, String concepto, double importe) {
         try {
-            // Uso el contador estático para generar un ID único
-            int id = contadorFacturas++;
-            AreaFacturacion factura = new AreaFacturacion(id, concepto, importe, LocalDate.now());
+
+            AreaFacturacion factura = new AreaFacturacion(concepto, importe, LocalDate.now());
             factura.generarFactura(paciente);
         } catch (EstadoPacienteException e) {
             System.out.println("ERROR AL FACTURAR: " + e.getMessage());
@@ -165,7 +243,7 @@ public class AreaFacturacion {
         for (AreaFacturacion f : facturas) {
             System.out.println("  " + f);
         }
-        System.out.println("Total facturado: " + getFacturacionTotal() + " €");
+        
     }
     
     /**
@@ -182,7 +260,7 @@ public class AreaFacturacion {
         int hc = paciente.getNumeroHistoriaClinica();
         List<AreaFacturacion> facturasPaciente = facturasPorPaciente.getOrDefault(hc, new ArrayList<>());
         
-        System.out.println("\n=== FACTURAS DE " + paciente.getNombreCompleto() + " (HC: " + hc + ") ===");
+        System.out.println("\n=== FACTURAS DE " + paciente.getNombreCompleto() + " (NHC: " + hc + ") ===");
         if (facturasPaciente.isEmpty()) {
             System.out.println("No tiene facturas");
         } else {
@@ -196,6 +274,8 @@ public class AreaFacturacion {
     public String toString() {
         return idFactura + " | " + concepto + " | " + importe + "€ | " + fechaFactura;
     }
+
+    //======================================= GETTERS ==================================================
     
     // Getters
     public int getIdFactura() { return idFactura; }

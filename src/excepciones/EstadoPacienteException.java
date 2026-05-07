@@ -1,3 +1,11 @@
+package excepciones;
+/*
+===================================
+|             REVISADA            |
+===================================
+
+*/
+
 /**
  * Excepción PERSONALIZADA para manejar errores relacionados con el estado del paciente
  * Hereda de Exception para que sea "checked" (obliga a manejarla con try-catch)
@@ -13,7 +21,7 @@
  * @author: Julia Amoros, Laura Leciñena, Alejandro Díaz 
  */
 
-public class EstadoPacienteException extends Exception {
+public class EstadoPacienteException extends RuntimeException {
     
     /**
      * Constructor que recibe el mensaje de error
@@ -21,7 +29,7 @@ public class EstadoPacienteException extends Exception {
      * @param mensaje Texto explicativo del error
      */
     public EstadoPacienteException(String mensaje) {
-        super(mensaje);  // Le paso el mensaje a la clase padre (Exception)
+        super(mensaje);  // Le paso el mensaje a la clase padre (RuntimeException)
     }
     
     /**
