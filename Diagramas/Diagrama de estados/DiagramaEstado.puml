@@ -1,0 +1,119 @@
+@startuml
+title Diagrama de Estados - Gestión Clínica (Atención al Paciente)
+
+[*] --> LlegadaPaciente : Paciente llega al hospital
+
+state LlegadaPaciente {
+    [*] --> VerificacionLlegada
+    VerificacionLlegada : entry / Personal administrativo verifica llegada
+    VerificacionLlegada : do / Manejar flujo de ingreso
+}
+
+state SolicitudDatos {
+    SolicitudDatos : entry / Solicitar DNI, nombre, fecha nacimiento, sexo
+    SolicitudDatos : do / Solicitar datos de contacto (dirección, teléfono, email, teléfono emergencia)
+    SolicitudDatos : do / Recopilar antecedentes médicos (enfermedades previas, alergias, intervenciones quirúrgicas, enfermedades crónicas, medicación)
+    SolicitudDatos : do / Verificar si los datos coinciden con los registrados
+}
+
+state VerificacionRecurrente {
+    VerificacionRecurrente : entry / Sistema busca historial por DNI
+    VerificacionRecurrente : do / Comparar datos actuales con registrados
+    VerificacionRecurrente : do / Detectar cambios en datos personales o antecedentes
+}
+
+state ActualizacionDatos {
+    ActualizacionDatos : entry / Paciente recurrente con cambios en sus datos
+    ActualizacionDatos : do / Actualizar información desactualizada
+    ActualizacionDatos : do / Añadir nuevos antecedentes médicos
+}
+
+state AsignacionHistoria {
+    AsignacionHistoria : entry / Asignar número de historia clínica único
+    AsignacionHistoria : do / Crear registro individualizado y rastreable
+}
+
+state EnConsulta {
+    EnConsulta : entry / Médico accede a historia clínica digital
+    EnConsulta : do / Añadir diagnósticos
+    EnConsulta : do / Añadir tratamientos
+    EnConsulta : do / Notificar a facturación si requiere pago
+}
+
+state CambioMedicoUnidad {
+    CambioMedicoUnidad : entry / Paciente cambia de médico o unidad
+    CambioMedicoUnidad : do / Actualizar historial médico
+    CambioMedicoUnidad : do / Reflejar cambios relevantes en tratamiento
+}
+
+state ModificacionDatos {
+    ModificacionDatos : entry / Personal administrativo realiza ajustes
+    ModificacionDatos : do / Actualizar datos personales del paciente
+    ModificacionDatos : do / Mantener precisión de la información
+}
+
+state EnTratamiento {
+    EnTratamiento : entry / Iniciar tratamiento prescrito
+    EnTratamiento : do / Aplicar tratamiento médico
+}
+
+state AltaMedica {
+    AltaMedica : entry / Actualizar historial clínico
+    AltaMedica : do / Cerrar registro de atención
+    AltaMedica : do / Reflejar todos los detalles en el sistema
+}
+
+state BajaPaciente {
+    BajaPaciente : entry / Decisión de no continuar tratamiento o baja administrativa
+    BajaPaciente : do / Eliminar registro del paciente (según políticas)
+    BajaPaciente : do / Suspender temporalmente registro (según políticas)
+}
+
+' Transiciones
+
+' Todos los pacientes pasan por solicitud de datos
+LlegadaPaciente --> SolicitudDatos : Verificar llegada
+
+' Paciente nuevo - No existe en el sistema
+SolicitudDatos --> AsignacionHistoria : Paciente NUEVO\n(DNI no registrado)
+
+' Paciente recurrente - Existe en el sistema
+SolicitudDatos --> VerificacionRecurrente : Paciente RECURRENTE\n(DNI registrado)
+
+' Verificar si los datos del recurrente coinciden
+VerificacionRecurrente --> EnConsulta : Datos coinciden\n(Sin cambios)
+
+VerificacionRecurrente --> ActualizacionDatos : Datos NO coinciden\n(Hay cambios)
+
+' Después de actualizar datos del recurrente
+ActualizacionDatos --> EnConsulta : Datos actualizados
+
+' Paciente nuevo continúa
+AsignacionHistoria --> EnConsulta : Historia asignada\nIniciar atención médica
+
+' Cambio de médico/unidad
+EnConsulta --> CambioMedicoUnidad : Cambio de médico o unidad
+CambioMedicoUnidad --> EnConsulta : Nuevo médico/unidad asignado
+
+' Modificación de datos personales
+EnConsulta --> ModificacionDatos : Solicitar modificación de datos personales
+ModificacionDatos --> EnConsulta : Datos actualizados
+
+' Paso a tratamiento
+EnConsulta --> EnTratamiento : Diagnóstico y tratamiento asignados
+
+' Cambio de médico/unidad durante tratamiento
+EnTratamiento --> CambioMedicoUnidad : Cambio de médico o unidad
+CambioMedicoUnidad --> EnTratamiento : Historial actualizado
+
+' Finalización
+EnTratamiento --> AltaMedica : Tratamiento completado
+
+' Bajas
+EnConsulta --> BajaPaciente : Baja administrativa
+EnTratamiento --> BajaPaciente : Abandono de tratamiento
+
+AltaMedica --> [*]
+BajaPaciente --> [*]
+
+@enduml
