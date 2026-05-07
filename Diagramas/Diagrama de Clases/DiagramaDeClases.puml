@@ -1,0 +1,182 @@
+@startuml
+
+' Clase Abstracta Persona
+
+abstract class Persona {
+    - final long serialVersionUID
+    - final String dni
+    - String nombreCompleto
+    - final LocalDate fechaNacimiento
+    - String sexo
+    --
+    + Persona(String, String, LocalDate, String)
+    + String validarDni(String)
+    + String validarNombreCompleto(String)
+    + LocalDate validarFechaNacimiento(LocalDate)
+    + String validarSexo(String)
+    + void mostrarDatos()
+    + String getDni()
+    + String getNombreCompleto()
+    + LocalDate getFechaNacimiento()
+    + String getSexo()
+    + void setNombreCompleto(String)
+    + void setSexo(String)
+}
+
+' Clase PersonalAdmin
+
+class PersonalAdmin <<final>> {
+    - final long serialVersionUID 
+    - final int idEmpleado
+    --
+    + PersonalAdmin(String, String, LocalDate, String, int)
+    + int validarIdEmpleado(int
+    + void registrarPaciente(Paciente)
+    + void modificarDatosPaciente(Paciente, String, String)
+    + void darAltaPaciente(Paciente)
+    + void darBajaPermanentePaciente(Paciente)
+    + void darBajatemporalPaciente(Paciente)
+    + void mostrarDatos()
+    + int getIdEmpleado()
+}
+
+' Clase Medico
+
+class Medico <<final>> {
+    - final long serialVersionUID
+    - final int numeroColegiado
+    - String especialidad
+    --
+    + Medico(String, String, LocalDate, String, int, String)
+    + int validarNumeroColegiado(int)
+    + String validarEspecialidad(String)
+    + void consultarHistorial(Paciente)
+    + void añadirDiagnostico(Paciente, String)
+    + void añadirTratamiento(Paciente, String)
+    + Paciente buscarPacienteAtendido(int)
+    + void mostrarDatos()
+    + int getNumeroColegiado()
+    + String getEspecialidad()
+}
+
+' Clase Paciente
+
+class Paciente {
+    - final long serialVersionUID
+    - int numeroHistoriaClinica
+    - String direccion
+    - int numeroTelefono
+    - String correoElectronico
+    - int telefonoEmergencia
+    - String estado
+    - boolean perteneceSistema
+    - HistorialMedico historial
+    --
+    + Paciente(String, String, LocalDate, String, String, int, String, int)
+    + String validarDireccion(String)
+    + int validarTelefono(int)
+    + String validarCorreo(String)
+    + String validarEstado(String)
+    + void mostrarDatos()
+    + void setDireccion(String)
+    + void setNumeroTelefono(int)
+    + void setCorreoElectronico(String)
+    + void setTelefonoEmergencia(int)
+    + void setEstado(String)
+    + void setActivo(boolean)
+    + int getNumeroHistoriaClinica()
+    + String getDireccion()
+    + int getNumeroTelefono()
+    + String getCorreoElectronico()
+    + int getTelefonoEmergencia()
+    + String getEstado()
+    + boolean isActivo()
+    + HistorialMedico getHistorial()
+}
+
+' Clase Historial
+
+class HistorialMedico {
+    - final long serialVersionUID
+    - String enfermedadesPrevias
+    - String alergias
+    - String intervencionesQuirurgicas
+    - String enfermedadesCronicas
+    - String medicacion
+    - String diagnosticos
+    - String tratamientos
+    --
+    + String agregarNuevoDato(String, String)
+    + void imprimirElementos(String, String)
+    + void agregarEnfermedadPrevia(String)
+    + void agregarAlergia(String)
+    + void agregarIntervencion(String)
+    + void agregarEnfermedadCronica(String)
+    + void agregarMedicacion(String)
+    + void agregarDiagnostico(String)
+    + void agregarTratamiento(String)
+    + boolean contieneAlergia(String)
+    + void mostrarHistorial()
+}
+
+' Clase AreaFacturacion
+
+class AreaFacturacion {
+    - final long serialVersionUID
+    - final int idFactura
+    - String concepto
+    - double importe
+    - LocalDate fechaFactura
+    - static List<AreaFacturacion> facturas
+    - static Map<Integer, List<AreaFacturacion>> facturasPorPaciente
+    - static int contadorFacturas
+    --
+    + AreaFacturacion(int, String, double, LocalDate)
+    + int validarIdFactura(int)
+    + String validarConcepto(String)
+    + double validarImporte(double)
+    + LocalDate validarFecha(LocalDate)
+    + void generarFactura(Paciente) throws EstadoPacienteException
+    + static List<AreaFacturacion> buscarFacturasPorPaciente(int)
+    + static void notificarProcedimiento(Paciente, String, double)
+    + static void listarTodasFacturas()
+    + static void mostrarFacturasDePaciente(Paciente)
+    + int getIdFactura()
+    + String getConcepto()
+    + double getImporte()
+    + LocalDate getFechaFactura()
+}
+
+' Excepcion Personalizada (Clase Separada) 
+
+class EstadoPacienteException {
+    --
+    + EstadoPacienteException(String)
+    + String getMessage()
+    + String getMensajeOriginal()
+}
+
+' Herencias
+
+Persona <|-- PersonalAdmin
+Persona <|-- Medico
+Persona <|-- Paciente
+
+' Composiciones
+
+Paciente *-- HistorialMedico : POSEE
+
+' Asociaciones
+
+PersonalAdmin --> Paciente : GESTIONA
+Medico --> Paciente : ATIENDE
+AreaFacturacion --> Paciente : FACTURA
+
+' Dependencias
+
+Medico ..> HistorialMedico : MODIFICA
+Medico ..> AreaFacturacion : NOTIFICA
+AreaFacturacion ..> EstadoPacienteException : lanza
+AreaFacturacion ..> Paciente : usa
+
+@enduml
