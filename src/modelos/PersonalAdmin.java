@@ -144,7 +144,7 @@ public final class PersonalAdmin extends Persona implements Serializable {
             paciente.setEstado("BAJA_PERMANENTE");
             System.out.println("Baja PERMANENTE aplicada");
 
-        paciente.setActivo(false);
+        paciente.setPerteneceSistema(false);
     }
     
         /**
@@ -161,7 +161,7 @@ public final class PersonalAdmin extends Persona implements Serializable {
             paciente.setEstado("BAJA_TEMPORAL");
             System.out.println("Baja TEMPORAL aplicada");
         
-        paciente.setActivo(true);
+        paciente.setPerteneceSistema(true);
     }
     /**
      * Sobrescribo el método mostrarDatos() de Persona
