@@ -166,7 +166,8 @@ PersonalAdmin --> Paciente : GESTIONA
 Medico --> Paciente : ATIENDE
 AreaFacturacion --> Paciente : FACTURA
 
-' Dependencia (uso temporal)
+' Dependencias (uso temporal)
 AreaFacturacion ..> EstadoPacienteException : LANZA
+Medico ..> AreaFacturacion : NOTIFICA
 
 @enduml
