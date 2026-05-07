@@ -28,7 +28,7 @@ public class Paciente extends Persona implements Serializable {
     private int telefonoEmergencia;           
     private String estado;      // Puede ser: ACTIVO, ALTA_MEDICA, BAJA_TEMPORAL, BAJA_PERMANENTE
     private boolean perteneceSistema;     // true = está en el sistema, false = no está
-    
+    private String antecedentesMedicos; 
     
     /*
         COMPOSICIÓN: el paciente "tiene un" historial médico
@@ -54,7 +54,7 @@ public class Paciente extends Persona implements Serializable {
      * @param telefonoEmergencia Teléfono de contacto de emergencia
      */
 
-    public Paciente(String dni, String nombreCompleto, LocalDate fechaNacimiento, String sexo, String direccion, int numeroTelefono, String correoElectronico, int telefonoEmergencia) {
+    public Paciente(String dni, String nombreCompleto, LocalDate fechaNacimiento, String sexo, String direccion, int numeroTelefono, String correoElectronico, int telefonoEmergencia, String antecedentesMedicos) {
         
         /*  Se coloca un contador, de esta forma a medida que van ingresando los pacientes en nuestro hospital se les asignara al número que se encuentre disponible por consecuencia */
         
@@ -68,7 +68,7 @@ public class Paciente extends Persona implements Serializable {
         this.telefonoEmergencia = validarTelefono(telefonoEmergencia); // Reutilizamos el mismo método para el teléfono de emergencia
         this.estado = "ACTIVO";      // Al crearlo, empieza activo
         this.perteneceSistema = true;
-        
+        this.antecedentesMedicos = validarAntecedentesMedicos(antecedentesMedicos);
         // Creo su historial médico vacío (luego se irá llenando)
         this.historial = new HistorialMedico();
     }
@@ -79,15 +79,30 @@ public class Paciente extends Persona implements Serializable {
      * @param direccion     dirección en donde reside el paciente
      * @return La dirección validada
      */
-    private String validarDireccion(String direccion){
-        
-        if (direccion == null){
+    private String validarDireccion(String direccion) {
+
+        if (direccion == null) {
             throw new NullPointerException("Él campo de dirección no puede ser nula");
         }
-        
+
         return direccion;
     }
 
+    /**
+     * Este método valída los antecedentes Medicos ingresados 
+     * 
+     * @param antecedentesMedicos
+     * @return Los antecedentes medicos 
+     */
+
+    public String validarAntecedentesMedicos(String antecedentesMedicos) {
+
+        if (direccion == null) {
+            throw new NullPointerException("Él campo de dirección no puede ser nula");
+        }
+
+        return antecedentesMedicos;
+    }
     /**
      * Valida que un número de teléfono tenga 9 dígitos (formato español).
      * @param telefono Número de teléfono
@@ -192,6 +207,7 @@ public class Paciente extends Persona implements Serializable {
         System.out.println("Tel. Emergencia: " + telefonoEmergencia);
         System.out.println("Estado: " + estado);
         System.out.println("Pertenece al sistema: " + (perteneceSistema ? "Sí" : "No"));
+        System.out.println("Antecedentes médicos: " + antecedentesMedicos);
     }
     
     
@@ -207,7 +223,7 @@ public class Paciente extends Persona implements Serializable {
     public void setCorreoElectronico(String correoElectronico) { this.correoElectronico = validarCorreo(correoElectronico); }
     public void setTelefonoEmergencia(int telefonoEmergencia) { this.telefonoEmergencia = validarTelefono(telefonoEmergencia); }
     public void setEstado(String estado) { this.estado = validarEstado(estado); }
-    public void setActivo(boolean activo) { this.perteneceSistema = activo; }
+    public void setPerteneceSistema(boolean perteneceSistema) { this.perteneceSistema = perteneceSistema; }
     
     // Getters
     public int getNumeroHistoriaClinica() { return numeroHistoriaClinica; }  
