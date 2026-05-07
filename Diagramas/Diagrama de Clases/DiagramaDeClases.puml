@@ -3,17 +3,12 @@
 ' Clase Abstracta Persona
 
 abstract class Persona {
-    - final long serialVersionUID
-    - final String dni
+    - String dni
     - String nombreCompleto
-    - final LocalDate fechaNacimiento
+    - LocalDate fechaNacimiento
     - String sexo
     --
     + Persona(String, String, LocalDate, String)
-    + String validarDni(String)
-    + String validarNombreCompleto(String)
-    + LocalDate validarFechaNacimiento(LocalDate)
-    + String validarSexo(String)
     + void mostrarDatos()
     + String getDni()
     + String getNombreCompleto()
@@ -21,48 +16,48 @@ abstract class Persona {
     + String getSexo()
     + void setNombreCompleto(String)
     + void setSexo(String)
+    - String validarDni(String)
+    - String validarNombreCompleto(String)
+    - LocalDate validarFechaNacimiento(LocalDate)
+    - String validarSexo(String)
 }
 
 ' Clase PersonalAdmin
 
 class PersonalAdmin <<final>> {
-    - final long serialVersionUID 
-    - final int idEmpleado
+    - int idEmpleado
     --
     + PersonalAdmin(String, String, LocalDate, String, int)
-    + int validarIdEmpleado(int
     + void registrarPaciente(Paciente)
-    + void modificarDatosPaciente(Paciente, String, String)
+    + void modificarDatosPersonalesPaciente(Paciente, String, String)
     + void darAltaPaciente(Paciente)
     + void darBajaPermanentePaciente(Paciente)
-    + void darBajatemporalPaciente(Paciente)
+    + void darBajaTemporalPaciente(Paciente)
     + void mostrarDatos()
     + int getIdEmpleado()
+    - int validarIdEmpleado(int)
 }
 
 ' Clase Medico
 
 class Medico <<final>> {
-    - final long serialVersionUID
-    - final int numeroColegiado
+    - int numeroColegiado
     - String especialidad
     --
     + Medico(String, String, LocalDate, String, int, String)
-    + int validarNumeroColegiado(int)
-    + String validarEspecialidad(String)
     + void consultarHistorial(Paciente)
     + void añadirDiagnostico(Paciente, String)
     + void añadirTratamiento(Paciente, String)
-    + Paciente buscarPacienteAtendido(int)
     + void mostrarDatos()
     + int getNumeroColegiado()
     + String getEspecialidad()
+    - int validarNumeroColegiado(int)
+    - String validarEspecialidad(String)
 }
 
 ' Clase Paciente
 
 class Paciente {
-    - final long serialVersionUID
     - int numeroHistoriaClinica
     - String direccion
     - int numeroTelefono
@@ -70,34 +65,35 @@ class Paciente {
     - int telefonoEmergencia
     - String estado
     - boolean perteneceSistema
+    - String antecedentesMedicos
     - HistorialMedico historial
     --
-    + Paciente(String, String, LocalDate, String, String, int, String, int)
-    + String validarDireccion(String)
-    + int validarTelefono(int)
-    + String validarCorreo(String)
-    + String validarEstado(String)
+    + Paciente(String, String, LocalDate, String, String, int, String, int, String)
     + void mostrarDatos()
     + void setDireccion(String)
     + void setNumeroTelefono(int)
     + void setCorreoElectronico(String)
     + void setTelefonoEmergencia(int)
     + void setEstado(String)
-    + void setActivo(boolean)
+    + void setPerteneceSistema(boolean)
     + int getNumeroHistoriaClinica()
     + String getDireccion()
     + int getNumeroTelefono()
     + String getCorreoElectronico()
     + int getTelefonoEmergencia()
     + String getEstado()
-    + boolean isActivo()
+    + boolean getPerteneceSistema()
     + HistorialMedico getHistorial()
+    - String validarDireccion(String)
+    - int validarTelefono(int)
+    - String validarCorreo(String)
+    - String validarEstado(String)
+    - String validarAntecedentesMedicos(String)
 }
 
-' Clase Historial
+' Clase HistorialMedico
 
 class HistorialMedico {
-    - final long serialVersionUID
     - String enfermedadesPrevias
     - String alergias
     - String intervencionesQuirurgicas
@@ -106,8 +102,7 @@ class HistorialMedico {
     - String diagnosticos
     - String tratamientos
     --
-    + String agregarNuevoDato(String, String)
-    + void imprimirElementos(String, String)
+    + HistorialMedico()
     + void agregarEnfermedadPrevia(String)
     + void agregarAlergia(String)
     + void agregarIntervencion(String)
@@ -115,15 +110,15 @@ class HistorialMedico {
     + void agregarMedicacion(String)
     + void agregarDiagnostico(String)
     + void agregarTratamiento(String)
-    + boolean contieneAlergia(String)
     + void mostrarHistorial()
+    - String agregarNuevoDato(String, String)
+    - void imprimirElementos(String, String)
 }
 
 ' Clase AreaFacturacion
 
 class AreaFacturacion {
-    - final long serialVersionUID
-    - final int idFactura
+    - int idFactura
     - String concepto
     - double importe
     - LocalDate fechaFactura
@@ -131,23 +126,25 @@ class AreaFacturacion {
     - static Map<Integer, List<AreaFacturacion>> facturasPorPaciente
     - static int contadorFacturas
     --
-    + AreaFacturacion(int, String, double, LocalDate)
-    + int validarIdFactura(int)
-    + String validarConcepto(String)
-    + double validarImporte(double)
-    + LocalDate validarFecha(LocalDate)
+    + AreaFacturacion(String, double, LocalDate)
     + void generarFactura(Paciente) throws EstadoPacienteException
+    + static double getFacturacionTotal()
     + static List<AreaFacturacion> buscarFacturasPorPaciente(int)
     + static void notificarProcedimiento(Paciente, String, double)
     + static void listarTodasFacturas()
     + static void mostrarFacturasDePaciente(Paciente)
+    + String toString()
     + int getIdFactura()
     + String getConcepto()
     + double getImporte()
     + LocalDate getFechaFactura()
+    - int validarIdFactura(int)
+    - String validarConcepto(String)
+    - double validarImporte(double)
+    - LocalDate validarFecha(LocalDate)
 }
 
-' Excepcion Personalizada (Clase Separada) 
+' Clase EstadoPacienteException (RuntimeException)
 
 class EstadoPacienteException {
     --
@@ -157,26 +154,19 @@ class EstadoPacienteException {
 }
 
 ' Herencias
-
 Persona <|-- PersonalAdmin
 Persona <|-- Medico
 Persona <|-- Paciente
 
-' Composiciones
-
+' Composición (relación fuerte TODO-PARTE)
 Paciente *-- HistorialMedico : POSEE
 
-' Asociaciones
-
+' Asociaciones (relaciones de uso)
 PersonalAdmin --> Paciente : GESTIONA
 Medico --> Paciente : ATIENDE
 AreaFacturacion --> Paciente : FACTURA
 
-' Dependencias
-
-Medico ..> HistorialMedico : MODIFICA
-Medico ..> AreaFacturacion : NOTIFICA
-AreaFacturacion ..> EstadoPacienteException : lanza
-AreaFacturacion ..> Paciente : usa
+' Dependencia (uso temporal)
+AreaFacturacion ..> EstadoPacienteException : LANZA
 
 @enduml
