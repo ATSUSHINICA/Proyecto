@@ -128,7 +128,6 @@ class AreaFacturacion {
     --
     + AreaFacturacion(String, double, LocalDate)
     + void generarFactura(Paciente) throws EstadoPacienteException
-    + static double getFacturacionTotal()
     + static List<AreaFacturacion> buscarFacturasPorPaciente(int)
     + static void notificarProcedimiento(Paciente, String, double)
     + static void listarTodasFacturas()
