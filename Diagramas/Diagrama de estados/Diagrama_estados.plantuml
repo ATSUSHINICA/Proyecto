@@ -1,47 +1,206 @@
 @startuml
-title Gestion Clinica: Atencion al paciente
 
-[*] --> Admitido : Llegada del paciente
+title Diagrama de Estados - Gestión Clínica (Atención al Paciente)
 
-state Admitido{
-    Admitido : entry / Verificar llegada 
-    Admitido : do / Comprobar si es recurrente
+[*] --> LlegadaPaciente : Paciente llega al hospital
+
+state LlegadaPaciente {
+    [*] --> VerificacionLlegada
+    VerificacionLlegada : entry / Personal PersonalAdmin verifica llegada
+    VerificacionLlegada : do / Gestiona flujo de ingreso
 }
 
-state Registrado{
-    Registrado : do / Solicitar datos personales y antecendetes médicos
+state SolicitudDNI {
+    SolicitudDNI : entry / Solicitar DNI al paciente
+    SolicitudDNI : do / Sistema busca DNI en el registro
 }
+
+LlegadaPaciente --> SolicitudDNI : Verificación completada
+
+state "¿DNI registrado?" as DecisionDNI <<choice>>
+SolicitudDNI --> DecisionDNI : DNI introducido
+
+' ============================================================
+'              RAMA PACIENTE NUEVO
+' ===========================================================
+
+' Aqui solo estarán aquellos pacientes los cauales no se encuentren registados 
+' en el sistema, sera necesario para registrarlos con efectividad todos los datos 
+' que sean totalmente necesarios
+
+state SolicitudDatosCompletos {
+
+    SolicitudDatosCompletos : entry / Paciente nuevo detectado
+    SolicitudDatosCompletos : do / Solicitar DNI, nombre completo
+    SolicitudDatosCompletos : do / Solicitar fecha nacimiento, sexo
+    SolicitudDatosCompletos : do / Solicitar dirección, teléfono, email
+    SolicitudDatosCompletos : do / Solicitar teléfono de emergencia
+
+}
+
+state RecopilarAntecedentes {
+
+    RecopilarAntecedentes : entry / Recopilar historial previo
+    RecopilarAntecedentes : do / Enfermedades previas, alergias
+    RecopilarAntecedentes : do / Intervenciones quirúrgicas
+    RecopilarAntecedentes : do / Enfermedades crónicas, medicación
+
+}
+
+state AsignacionHistoriaClinica {
+
+    AsignacionHistoriaClinica : entry / Generar número de HC único
+    AsignacionHistoriaClinica : do / Crear registro individualizado
+    AsignacionHistoriaClinica : do / Registro rastreable en el sistema
+
+}
+
+DecisionDNI --> SolicitudDatosCompletos : [DNI no registrado]\nPaciente NUEVO
+SolicitudDatosCompletos --> RecopilarAntecedentes : Datos personales completados
+RecopilarAntecedentes --> AsignacionHistoriaClinica : Antecedentes registrados
+
+' ============================================================
+'              RAMA PACIENTE RECURRENTE
+' ========================================================
+
+' En esta rama se encontrara el flujo de aquellos pacientes los cuales se
+' encuentren registrados correctamente dentro del sistema 
+
+state CargaAutomaticaHistorial {
+
+    CargaAutomaticaHistorial : entry / Paciente recurrente detectado
+    CargaAutomaticaHistorial : do / Sistema carga historial por DNI
+    CargaAutomaticaHistorial : do / Datos sugeridos automáticamente
+
+}
+
+state VerificacionCambios {
+
+    VerificacionCambios : entry / Comparar datos actuales vs registrados
+    VerificacionCambios : do / Detectar cambios en datos personales
+    VerificacionCambios : do / Detectar nuevos antecedentes médicos
+    
+}
+
+state "¿Hay cambios?" as DecisionCambios <<choice>>
+
+state ActualizacionDatos {
+
+    ActualizacionDatos : entry / Personal PersonalAdmin realiza ajustes
+    ActualizacionDatos : do / Actualizar datos personales
+    ActualizacionDatos : do / Mantener precisión de la información
+
+}
+
+DecisionDNI --> CargaAutomaticaHistorial : [DNI registrado]\nPaciente RECURRENTE
+CargaAutomaticaHistorial --> VerificacionCambios : Historial cargado
+VerificacionCambios --> DecisionCambios : Verificación realizada
+DecisionCambios --> ActualizacionDatos : [Hay cambios en los datos]
+DecisionCambios --> EnConsulta : [Sin cambios\nDatos coinciden]
+ActualizacionDatos --> EnConsulta : Datos actualizados correctamente
+
+
+' El cambio de médico y de unidad en el problema no especifica cuando se puede cambiar
+' por lo que nosotros interpretamos por razones obvias dentro de nuestras experiencias
+' obviamente se puede solicitar el cambio de unidad estando en consulta o mientras estas 
+' en tratamiento, almenos en la sanidad publica, de esta gestión se encargaría el personal administrativo.  
+
+state CambioMedicoUnidad {
+
+    CambioMedicoUnidad : entry / PersonalAdmin: cambio de médico o unidad
+    CambioMedicoUnidad : do / Reasigna médico responsable
+    CambioMedicoUnidad : do / Historial médico actualizado
+    CambioMedicoUnidad : do / Cambios reflejados en tratamiento
+    CambioMedicoUnidad : exit / Nuevo médico/unidad asignado
+
+}
+
+' ============================================================
+'              EN CONSULTA
+' ============================================================
+
+' Una vez que ambos tipos de pacientes se encuentren registrados correctamente en el sistema 
+' podrán asisistir correctamente a la consulta medica  
 
 state EnConsulta {
-    EnConsulta : do / Atender y agregar diagnostico y/o tratamiento
+
+    EnConsulta : entry / Médico accede a historia clínica digital
+    EnConsulta : do / Añadir diagnósticos al historial
+    EnConsulta : do / Añadir tratamientos al historial
+    EnConsulta : do / Sugerir historial automáticamente
+    EnConsulta : do / Notificar a facturación si requiere pago
 }
+
+AsignacionHistoriaClinica --> EnConsulta : HC asignado\nIniciar atención médica
+
+
+EnConsulta --> CambioMedicoUnidad : PersonalAdmin: cambio de médico o unidad
+CambioMedicoUnidad --> EnConsulta : Nuevo médico/unidad asignado
+
+' ============================================================
+'              EN TRATAMIENTO
+' ============================================================
+
+' El tratamiento es impuesto unicamente por el médico, es quien llevará el control 
+' y el tiempo que debe de seguirlo cada uno de los pacientes que se encuentran bajo su cuidado
 
 state EnTratamiento {
-    EnTratamiento : do / Aplicar tratamiento
+
+    EnTratamiento : entry / Diagnóstico y tratamiento asignados
+    EnTratamiento : do / Aplicar tratamiento prescrito
+    EnTratamiento : do / Seguimiento médico activo
+    
 }
 
-state DeAlta {
-    DeAlta : entry / Actualizar historial clinico
-    DeAlta : do / Cerrar registro de atención
+EnConsulta --> EnTratamiento : Diagnóstico y tratamiento asignados
+
+' El admin también puede hacer cambios durante el tratamiento
+EnTratamiento --> CambioMedicoUnidad : PersonalAdmin: cambio de médico o unidad
+CambioMedicoUnidad --> EnTratamiento : Historial actualizado\nTratamiento retomado
+
+
+' ============================================================
+'              ESTADOS FINALES
+' ============================================================
+
+' Estos últimos estados son getionados por el personal administrativo, en donde por decisión propia 
+' del paciente decide si realizar la baja permanente  o una baja temporal, ahora bien el alta medica
+' solo se la puede dar el medico si ha visto que se ha solucionado el problema por el cual el paciente decidió
+' realizar una consulta y el tratiemnto fua completado.
+
+state AltaMedica {
+
+    AltaMedica : entry / Tratamiento completado
+    AltaMedica : do / Actualizar historial clínico
+    AltaMedica : do / Cerrar registro de atención
+    AltaMedica : do / Todos los detalles reflejados en el sistema
+    AltaMedica : exit / Estado = ALTA_MEDICA
 }
 
-state DeBaja {
-    DeBaja : do / Eliminar o suspender registro de atención
+state BajaPermanente {
+
+    BajaPermanente : entry / Baja por motivos administrativos
+    BajaPermanente : do / PersonalAdmin: elimina registro del paciente
+    BajaPermanente : exit / Estado = BAJA_PERMANENTE
+
 }
 
-Admitido --> Registrado : Paciente nuevo
-Admitido --> EnConsulta : Paciente recurrente
+state BajaTemporal {
 
-Registrado --> EnConsulta : Datos completados
+    BajaTemporal : entry / Suspensión temporal del registro
+    BajaTemporal : do / PersonalAdmin: suspende registro temporalmente
+    BajaTemporal : exit / Estado = BAJA_TEMPORAL
 
-EnConsulta --> EnConsulta : Modificar datos personales
-EnConsulta --> EnTratamiento : Diagnostico y tratamiento asignados
+}
 
-EnTratamiento --> EnTratamiento : Cambio de medico o unidad - Actualizar historial
-EnTratamiento --> DeAlta : Tratamiento completado
-EnTratamiento --> DeBaja : Abandono de tratamiento o baja administrativa
+EnTratamiento --> AltaMedica : Tratamiento completado
+EnConsulta --> BajaPermanente : PersonalAdmin: baja administrativa permanente
+EnTratamiento --> BajaPermanente : PersonalAdmin: paciente abandona el tratamiento
+EnConsulta --> BajaTemporal : PersonalAdmin: suspensión temporal solicitada
+EnTratamiento --> BajaTemporal : PersonalAdmin: suspensión temporal durante tratamiento
 
-DeAlta --> [*]
-DeBaja --> [*]
+AltaMedica --> [*]
+BajaPermanente --> [*]
+BajaTemporal --> [*]
+
 @enduml
-

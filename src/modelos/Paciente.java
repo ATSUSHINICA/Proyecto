@@ -10,7 +10,7 @@ package modelos;
  * Clase Paciente que hereda de Persona
  * Un paciente es una persona con datos de contacto y un historial médico
  * 
- * @author: Julia Amoros, Laura Leciñena, Alejandro Díaz 
+ * @author: Laura Leciñena, Alejandro Díaz 
  * @since 2026/04/16
  */
 

@@ -1,58 +1,137 @@
 @startuml
-title Gestion Clinica: Atencion al paciente
+title Diagrama de Actividad - Gestión Clínica (Atención al Paciente)
 
-|Paciente|
-:Llegar a la clinica;
+|Personal Administrativo|
+start
 
-|Administrativo|
-:Admitir al paciente;
+:Paciente llega al hospital;
+:Verificar llegada del paciente;
+:Solicitar DNI al paciente;
 
-if (¿Paciente recurrente?) then ([NO])
-    |Administrativo|
-    :Solicitar datos personales 
-    y antecedentes médicos;
-    
-    |Paciente|
-    :Proporcionar datos personales 
-    y antecedentes medicos;
-    
-    |Administrativo|
-    :Registrar al paciente;
-    :Asignar numero unico al paciente;
-else ([SI])
-    |Sistema|
-    :Sugerir historial clinico;
-    
-    |Administrativo|
-    :Actualizar datos si es necesario;
-end if;
+if (¿DNI registrado en el sistema?) then (No  \n Paciente nuevo)
 
-|Administrativo|
-if (¿Se requieren modificar datos?) then ([SI])
-    :Modificar datos personales;
-end if;
+    :Solicitar datos personales completos;
 
-|Medico|
-:Acceder al historial clinico;
-:Atender al paciente;
-:Agregar diagnostico y/o tratamiento;
+    :Recopilar antecedentes médicos;
 
-|Sistema|
-if (¿Pago necesario?) then ([SI])
-    :Notificar pago al área de facturación;
-end if;
+    :Asignar número de Historia Clínica único;
 
-|Administrativo|
-if (¿Cambio de médico o unidad?) then ([SI])
-    :Actualizar historial;
-end if;
 
-if (¿Estado del paciente?) then ([ALTA])
-    :Actualizar historial clinico;
-    :Cerrar registro de atencion;
-    stop
-else ([BAJA])
-    :Eliminar o suspender registro de atencion;
-    stop
-end if;
+else (Sí \n Paciente recurrente)
+
+    :Cargar historial automáticamente por DNI;
+
+
+    if (¿Hay cambios en los datos?) then (Sí)
+        :Actualizar datos personales;
+        :Añadir nuevos antecedentes médicos;
+
+    else (No \n Datos coinciden)
+
+    endif
+
+endif
+
+' El médico lleva el control clínico y de modificaciones dentro del historial clinico del paciente 
+' El admin gestiona los cambios administrativos del paciente 
+
+|Médico|
+
+:Acceder a la historia clínica digital;
+:Añadir diagnósticos al historial;
+:Añadir tratamientos al historial;
+
+|Personal Administrativo|
+
+if (¿Se solicita cambio de médico o unidad?) then (Sí)
+
+    :Reasignar médico responsable;
+    :Actualizar historial con nuevo médico/unidad;
+else (No)
+
+endif
+
+if (¿Continuación del paciente desde consulta?) then (Baja administrativa)
+
+    if (¿Tipo de baja?) then (Permanente)
+
+        :Eliminar registro del paciente;
+
+        stop
+
+    else (Temporal)
+
+        :Suspender registro temporalmente;
+
+        stop
+
+    endif
+
+else (Diagnóstico y tratamiento asignados)
+
+
+' El médico aplica y hace seguimiento al paciente para ver si el tratamiento realiza el efecto 
+' esperado por el medico
+
+
+    |Médico|
+
+    :Iniciar tratamiento prescrito;
+    :Seguimiento médico activo;
+
+    ' El sistema notifica automáticamente a facturación
+    ' si el procedimiento requiere pago.
+    ' Facturación lo consulta desde su propio menú
+
+    :Notificar a facturación si requiere pago;
+
+    |Personal de Facturación|
+
+    ' El personal de Facturación es quien revisa si se ha enviado una notificacion de cobro al paciente 
+    ' esa notificación es enviada de parte del médico en caso de se crea cònveniente dependiendo de si 
+    ' despues de la consulta y tratamiento resulta necesario
+
+    :Ver notificaciones de procedimientos de pago;
+    :Generar factura al paciente si procede;
+
+    |Personal Administrativo|
+
+    if (¿Se solicita cambio de médico o unidad?) then (Sí)
+        :Reasignar médico responsable;
+        :Actualizar historial con nuevo médico/unidad;
+    else (No)
+
+    endif
+
+    if (¿Finalización del tratamiento?) then (Abandono o baja)
+
+        if (¿Tipo de baja?) then (Permanente)
+
+            :Eliminar registro del paciente;
+
+            stop
+        else (Temporal)
+
+            :Suspender registro temporalmente;
+
+            stop
+        endif
+
+    else (Tratamiento completado)
+
+        |Médico|
+        :Conceder alta médica al paciente;
+
+        ' El medico es el único después de una evaluación al paciente si se le puede realizar el alta medica 
+
+        |Personal Administrativo|
+        :Actualizar historial clínico;
+        :Cerrar registro de atención;
+        
+        stop
+
+    endif
+
+endif
+
 @enduml

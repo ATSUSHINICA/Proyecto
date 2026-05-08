@@ -9,7 +9,7 @@ package modelos;
 /**
  * Clase que maneja todas las facturas del hospital
  * 
- * @author: Julia Amoros, Laura Leciñena, Alejandro Díaz 
+ * @author: Laura Leciñena, Alejandro Díaz 
  */
 
 import excepciones.EstadoPacienteException;

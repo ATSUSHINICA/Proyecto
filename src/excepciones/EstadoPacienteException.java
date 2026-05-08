@@ -18,7 +18,7 @@ package excepciones;
  * - Para FORZAR a que quien la use la maneje con try-catch o throws
  * - Así nos aseguramos de que no se nos olvide validar el estado del paciente antes de facturar
  * 
- * @author: Julia Amoros, Laura Leciñena, Alejandro Díaz 
+ * @author: Laura Leciñena, Alejandro Díaz 
  */
 
 public class EstadoPacienteException extends RuntimeException {

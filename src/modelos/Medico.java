@@ -11,7 +11,7 @@ package modelos;
  * Clase Medico que hereda de Persona
  * Un médico es una persona con atributos específicos: número de colegiado y especialidad
  * 
- * @author: Julia Amoros, Laura Leciñena, Alejandro Díaz 
+ * @author: Laura Leciñena, Alejandro Díaz 
  * @since 2026/04/16
  */
 

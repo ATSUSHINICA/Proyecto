@@ -11,7 +11,7 @@ package modelos;
  * Creo la clase persona de tipo abstract, ya que será la que herede los datos que comparten en común
  * las clases PersonalAdmin, Medico y Paciente
  * 
- * @author: Julia Amoros, Laura Leciñena, Alejandro Díaz 
+ * @author: JLaura Leciñena, Alejandro Díaz 
  * @since 2026/04/16
  */
 

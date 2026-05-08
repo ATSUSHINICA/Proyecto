@@ -17,7 +17,7 @@
  *   - PersonalAdministrativo (verificado)
  *   - PersonalFacturación (verificado)
  * 
- * @author: Julia Amoros, Laura Leciñena, Alejandro Díaz
+ * @author: Laura Leciñena, Alejandro Díaz
  * @since 2026/04/16
  */
 
@@ -41,10 +41,10 @@ public class Main {
         Se cargan desde fichero al iniciar y se guardan al cerrar.
     */
 
-    private static List<Paciente>        pacientes   = new ArrayList<>();
-    private static List<Medico>          medicos     = new ArrayList<>();
-    private static List<PersonalAdmin>   admins      = new ArrayList<>();
-    private static List<AreaFacturacion> facturacion = new ArrayList<>();
+    private static List<Paciente>       pacientes      = new ArrayList<>();
+    private static List<Medico>         medicos        = new ArrayList<>();
+    private static List<PersonalAdmin>  admins         = new ArrayList<>();
+    private static List<AreaFacturacion>    facturacion = new ArrayList<>();
 
     // ============================================================================================
     //                              RUTAS DE LOS FICHEROS
@@ -58,14 +58,14 @@ public class Main {
         Es static porque se utiliza dentro del propio main y final porque será la dirección en donde permaneceran los datos 
     */
 
-    private static final String RUTA_PACIENTES   = "datos/pacientes.dat";
-    private static final String RUTA_MEDICOS     = "datos/medicos.dat";
-    private static final String RUTA_ADMINS      = "datos/admins.dat";
+    private static final String RUTA_PACIENTES = "datos/pacientes.dat";
+    private static final String RUTA_MEDICOS   = "datos/medicos.dat";
+    private static final String RUTA_ADMINS    = "datos/admins.dat";
     private static final String RUTA_FACTURACION = "datos/facturacion.dat";
 
 
     // ============================================================================================
-    //                              CREDENCIALES DE ACCESO (SIMULADAS)
+    //                                    CREDENCIALES DE ACCESO
     // ============================================================================================
 
     /*
@@ -82,8 +82,8 @@ public class Main {
 
     private static final Map<String, String[]> usuariosSistema = new HashMap<>();
 
-    // teclado global para toda la clase entera, incluyendo metodos fuera del main
-    private static Scanner teclado = new Scanner(System.in);
+    // Scanner global para toda la clase entera, incluyendo metodos fuera del main
+    private static Scanner scanner = new Scanner(System.in);
 
 
     // ============================================================================================
@@ -96,7 +96,7 @@ public class Main {
 
         new File("datos").mkdirs();
 
-        // Inicializamos los usuarios del sistema que están dentro de los ficheros
+        // Inicializamos los usuarios del sistema 
         inicializarUsuarios();
 
         // Cargamos todos los datos persistidos de fichero
@@ -106,16 +106,16 @@ public class Main {
         mostrarBienvenida();
 
         // Bucle de sesión: permite múltiples logins sin cerrar el programa
-        boolean seguir = true;
+        boolean ejecutando = true;
 
-        while (seguir) {
+        while (ejecutando) {
 
             // Pedimos las credenciales al usuario
             String[] sesion = iniciarSesion();
 
             // null significa que el usuario eligió salir del login
             if (sesion == null) {
-                seguir = false;
+                ejecutando = false;
                 continue;
             }
 
@@ -143,7 +143,7 @@ public class Main {
 
         System.out.println("\nSesión cerrada. Datos guardados correctamente.");
         System.out.println("Hasta pronto.");
-        teclado.close();
+        scanner.close();
     }
 
 
@@ -159,19 +159,20 @@ public class Main {
      * 
      * Roles posibles: MEDICO, ADMIN, FACTURACION
      */
+
     private static void inicializarUsuarios() {
 
         // Médicos del sistema
-        usuariosSistema.put("dr.garcia",   new String[]{"garcia1234",   "MEDICO"});
-        usuariosSistema.put("dr.martinez", new String[]{"martinez1234", "MEDICO"});
+        usuariosSistema.put("dr.garcia",    new String[]{"garcia1234",  "MEDICO"});
+        usuariosSistema.put("dr.martinez",  new String[]{"martinez1234", "MEDICO"});
 
         // Personal administrativo
-        usuariosSistema.put("admin.lopez", new String[]{"lopez1234",    "ADMIN"});
-        usuariosSistema.put("admin.perez", new String[]{"perez1234",    "ADMIN"});
+        usuariosSistema.put("admin.lopez",  new String[]{"lopez1234",   "ADMIN"});
+        usuariosSistema.put("admin.perez",  new String[]{"perez1234",   "ADMIN"});
 
         // Personal de facturación
-        usuariosSistema.put("fact.ruiz",   new String[]{"ruiz1234",     "FACTURACION"});
-        usuariosSistema.put("fact.torres", new String[]{"torres1234",   "FACTURACION"});
+        usuariosSistema.put("fact.ruiz",    new String[]{"ruiz1234",    "FACTURACION"});
+        usuariosSistema.put("fact.torres",  new String[]{"torres1234",  "FACTURACION"});
     }
 
 
@@ -209,34 +210,56 @@ public class Main {
         System.out.println("\n--- INICIO DE SESIÓN ---");
         System.out.println("(Escriba '0' en usuario para salir del sistema)\n");
 
-        System.out.print("Usuario: ");
-        String usuario = teclado.nextLine().trim();
+        int intentos = 0;
+        int maxIntentos = 3;
 
-        // El usuario quiere salir nos sacara del sistema directamente con return
-        if (usuario.equals("0")) {
-            return null;
-        }
+        while (intentos < maxIntentos) {
 
-        System.out.print("Contraseña: ");
-        String contrasena = teclado.nextLine();
+            System.out.print("Usuario: ");
+            String usuario = scanner.nextLine().trim();
 
-        // Verificamos si el usuario existe en el sistema
-        if (usuariosSistema.containsKey(usuario)) {
+            // El usuario quiere salir
+            if (usuario.equals("0")) {
+                return null;
+            }
 
-            String[] datos = usuariosSistema.get(usuario);
-            String contrasenaCorrecta = datos[0];
-            String rol = datos[1];
+            System.out.print("Contraseña: ");
+            String contrasena = scanner.nextLine().trim();
 
-            // Comprobamos la contraseña
-            if (contrasena.equals(contrasenaCorrecta)) {
-                System.out.println("\n[OK] Acceso concedido. Bienvenido/a, " + usuario + " (" + rol + ")");
-                return new String[]{usuario, rol};
+            // Verificamos si el usuario existe en el sistema
+            if (usuariosSistema.containsKey(usuario)) {
+
+                String[] datos = usuariosSistema.get(usuario);
+                String contrasenaCorrecta = datos[0];
+                String rol = datos[1];
+
+                // Comprobamos la contraseña
+                if (contrasena.equals(contrasenaCorrecta)) {
+                    System.out.println("\n[OK] Acceso concedido. Bienvenido/a, " + usuario + " (" + rol + ")");
+                    return new String[]{usuario, rol};
+                }
+            }
+
+            // Si llegamos aquí, las credenciales eran incorrectas
+            intentos++;
+            int restantes = maxIntentos - intentos;
+
+            if (restantes > 0) {
+                System.out.println("[ERROR] Usuario o contraseña incorrectos. Intentos restantes: " + restantes);
+            } else {
+                System.out.println("[ERROR] Número máximo de intentos alcanzado. Acceso bloqueado temporalmente.");
             }
         }
 
-        System.out.println("[ERROR] Usuario o contraseña incorrectos.");
+        // Esperamos un momento antes de volver a mostrar el login
+        System.out.println("\nEsperando 3 segundos antes de permitir un nuevo acceso...");
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
 
-        /* Llamada recursiva, volvemos a mostrar el login en caso de que las credenciales sean incorrectas que se vuelva a intentar introducirlos */
+        // Llamada recursiva: volvemos a mostrar el login
         return iniciarSesion();
     }
 
@@ -259,8 +282,8 @@ public class Main {
      */
     private static void menuMedico(String usuario) {
 
-        /* Buscamos el médico correspondiente al usuario logueado
-        En este sistema el nombre de usuario contiene "dr." seguido del apellido */
+        // Buscamos el médico correspondiente al usuario logueado
+        // En este sistema el nombre de usuario contiene "dr." seguido del apellido
         Medico medicoActual = buscarMedicoPorUsuario(usuario);
 
         boolean enMenu = true;
@@ -273,13 +296,14 @@ public class Main {
             System.out.println("  [1] Buscar paciente y ver su historial");
             System.out.println("  [2] Añadir diagnóstico a un paciente");
             System.out.println("  [3] Añadir tratamiento a un paciente");
-            System.out.println("  [4] Sugerir historial automáticamente (pacientes recurrentes)");
-            System.out.println("  [5] Notificar procedimiento de pago");
+            System.out.println("  [4] Añadir antecedentes médicos a un paciente");
+            System.out.println("  [5] Sugerir historial automáticamente (pacientes recurrentes)");
+            System.out.println("  [6] Ver notificaciones de facturación pendientes");
             System.out.println("  [0] Cerrar sesión");
             System.out.println("=============================================================");
             System.out.print("  Seleccione una opción: ");
 
-            String opcion = teclado.nextLine().trim();
+            String opcion = scanner.nextLine().trim();
 
             switch (opcion) {
 
@@ -296,11 +320,15 @@ public class Main {
                     break;
 
                 case "4":
-                    sugerirHistorialAutomatico();
+                    añadirAntecedentesMedicos();
                     break;
 
                 case "5":
-                    notificarProcedimiento();
+                    sugerirHistorialAutomatico();
+                    break;
+
+                case "6":
+                    verNotificacionesFacturacion();
                     break;
 
                 case "0":
@@ -355,7 +383,7 @@ public class Main {
             System.out.println("=============================================================");
             System.out.print("  Seleccione una opción: ");
 
-            String opcion = teclado.nextLine();
+            String opcion = scanner.nextLine().trim();
 
             switch (opcion) {
 
@@ -410,7 +438,7 @@ public class Main {
      *   - Generar factura para un paciente
      *   - Ver todas las facturas del sistema
      *   - Ver facturas de un paciente concreto
-     *   - Ver bandeja de notificaciones de procedimientos de pago
+     *   - Notificar procedimiento de pago
      * 
      * @param usuario Nombre de usuario del personal de facturación
      */
@@ -426,12 +454,12 @@ public class Main {
             System.out.println("  [1] Generar factura para un paciente");
             System.out.println("  [2] Ver todas las facturas del sistema");
             System.out.println("  [3] Ver facturas de un paciente concreto");
-            System.out.println("  [4] Ver bandeja de notificaciones");
+            System.out.println("  [4] Notificar procedimiento de pago");
             System.out.println("  [0] Cerrar sesión");
             System.out.println("=============================================================");
             System.out.print("  Seleccione una opción: ");
 
-            String opcion = teclado.nextLine();
+            String opcion = scanner.nextLine().trim();
 
             switch (opcion) {
 
@@ -448,7 +476,7 @@ public class Main {
                     break;
 
                 case "4":
-                    verNotificacionesFacturacion();
+                    notificarProcedimiento();
                     break;
 
                 case "0":
@@ -504,7 +532,7 @@ public class Main {
         if (paciente == null) return;
 
         System.out.print("Introduce el diagnóstico: ");
-        String diagnostico = teclado.nextLine();
+        String diagnostico = scanner.nextLine().trim();
 
         if (diagnostico.isEmpty()) {
             System.out.println("[ERROR] El diagnóstico no puede estar vacío.");
@@ -542,7 +570,7 @@ public class Main {
         if (paciente == null) return;
 
         System.out.print("Introduce el tratamiento: ");
-        String tratamiento = teclado.nextLine();
+        String tratamiento = scanner.nextLine().trim();
 
         if (tratamiento.isEmpty()) {
             System.out.println("[ERROR] El tratamiento no puede estar vacío.");
@@ -588,12 +616,12 @@ public class Main {
             System.out.println("  [0] Volver al menú anterior");
             System.out.print("  Opción: ");
 
-            String opcion = teclado.nextLine().trim();
+            String opcion = scanner.nextLine().trim();
 
             switch (opcion) {
                 case "1":
                     System.out.print("Enfermedad previa: ");
-                    String enfPrevia = teclado.nextLine().trim();
+                    String enfPrevia = scanner.nextLine().trim();
                     if (!enfPrevia.isEmpty()) {
                         paciente.getHistorial().agregarEnfermedadPrevia(enfPrevia);
                         System.out.println("Enfermedad previa añadida.");
@@ -603,7 +631,7 @@ public class Main {
 
                 case "2":
                     System.out.print("Alergia: ");
-                    String alergia = teclado.nextLine().trim();
+                    String alergia = scanner.nextLine().trim();
                     if (!alergia.isEmpty()) {
                         paciente.getHistorial().agregarAlergia(alergia);
                         System.out.println("Alergia añadida.");
@@ -613,7 +641,7 @@ public class Main {
 
                 case "3":
                     System.out.print("Intervención quirúrgica: ");
-                    String intervencion = teclado.nextLine().trim();
+                    String intervencion = scanner.nextLine().trim();
                     if (!intervencion.isEmpty()) {
                         paciente.getHistorial().agregarIntervencion(intervencion);
                         System.out.println("Intervención añadida.");
@@ -623,7 +651,7 @@ public class Main {
 
                 case "4":
                     System.out.print("Enfermedad crónica: ");
-                    String enfCronica = teclado.nextLine().trim();
+                    String enfCronica = scanner.nextLine().trim();
                     if (!enfCronica.isEmpty()) {
                         paciente.getHistorial().agregarEnfermedadCronica(enfCronica);
                         System.out.println("Enfermedad crónica añadida.");
@@ -633,7 +661,7 @@ public class Main {
 
                 case "5":
                     System.out.print("Medicación habitual: ");
-                    String medicacion = teclado.nextLine().trim();
+                    String medicacion = scanner.nextLine().trim();
                     if (!medicacion.isEmpty()) {
                         paciente.getHistorial().agregarMedicacion(medicacion);
                         System.out.println("Medicación añadida.");
@@ -666,7 +694,7 @@ public class Main {
         }
 
         System.out.print("Introduce el DNI del paciente: ");
-        String dni = teclado.nextLine().trim().toUpperCase();
+        String dni = scanner.nextLine().trim().toUpperCase();
 
         Paciente encontrado = null;
 
@@ -720,7 +748,7 @@ public class Main {
 
         try {
             System.out.print("DNI: ");
-            String dni = teclado.nextLine().trim();
+            String dni = scanner.nextLine().trim();
 
             // Comprobamos si el DNI ya existe en el sistema
             for (Paciente p : pacientes) {
@@ -731,42 +759,43 @@ public class Main {
             }
 
             System.out.print("Nombre completo: ");
-            String nombre = teclado.nextLine().trim();
+            String nombre = scanner.nextLine().trim();
 
             System.out.print("Fecha de nacimiento (DD/MM/YYYY): ");
             LocalDate fechaNac = leerFecha();
             if (fechaNac == null) return;
 
             System.out.print("Sexo (M/F): ");
-            String sexo = teclado.nextLine().trim();
+            String sexo = scanner.nextLine().trim();
 
             System.out.print("Dirección: ");
-            String direccion = teclado.nextLine().trim();
+            String direccion = scanner.nextLine().trim();
 
             System.out.print("Número de teléfono (9 dígitos): ");
             int telefono = leerEntero();
             if (telefono == -1) return;
 
             System.out.print("Correo electrónico: ");
-            String correo = teclado.nextLine().trim();
+            String correo = scanner.nextLine().trim();
 
             System.out.print("Teléfono de emergencia (9 dígitos): ");
             int telefonoEmergencia = leerEntero();
             if (telefonoEmergencia == -1) return;
 
-            System.out.print("Antecedentes médicos generales (o Enter para omitir): ");
-            String antecedentesMedicos = teclado.nextLine().trim();
-
-            // Creamos el paciente con todos los datos recogidos
+            // Creamos el paciente con todos los datos
             Paciente nuevoPaciente = new Paciente(
                 dni, nombre, fechaNac, sexo,
-                direccion, telefono, correo, telefonoEmergencia, antecedentesMedicos
+                direccion, telefono, correo, telefonoEmergencia
             );
+
+            // Asignamos el número de historia clínica manualmente usando reflexión
+            // ya que en Paciente el contador es de instancia (++ dentro del constructor)
+            // Lo hacemos así para mantener la coherencia con el diseño original de la clase
 
             // Añadimos el paciente a la lista del sistema
             pacientes.add(nuevoPaciente);
 
-            // Llamamos al método de registro del admin si está disponible
+            // Llamamos al método de registro del admin
             if (admin != null) {
                 admin.registrarPaciente(nuevoPaciente);
             }
@@ -803,14 +832,14 @@ public class Main {
         System.out.println("\nIntroduzca los nuevos datos (deje en blanco para no modificar):");
 
         System.out.print("Nuevo nombre completo [" + paciente.getNombreCompleto() + "]: ");
-        String nuevoNombre = teclado.nextLine().trim();
+        String nuevoNombre = scanner.nextLine().trim();
 
         System.out.print("Nuevo sexo (M/F) [" + paciente.getSexo() + "]: ");
-        String nuevoSexo = teclado.nextLine().trim();
+        String nuevoSexo = scanner.nextLine().trim();
 
         // Si se dejó en blanco, mantenemos el valor actual
         if (nuevoNombre.isEmpty()) nuevoNombre = paciente.getNombreCompleto();
-        if (nuevoSexo.isEmpty())   nuevoSexo   = paciente.getSexo();
+        if (nuevoSexo.isEmpty())  nuevoSexo  = paciente.getSexo();
 
         try {
             if (admin != null) {
@@ -849,7 +878,7 @@ public class Main {
         }
 
         System.out.println("¿Está seguro de dar el alta a " + paciente.getNombreCompleto() + "? (S/N): ");
-        String confirmacion = teclado.nextLine().trim().toUpperCase();
+        String confirmacion = scanner.nextLine().trim().toUpperCase();
 
         if (!confirmacion.equals("S")) {
             System.out.println("Operación cancelada.");
@@ -888,7 +917,7 @@ public class Main {
 
         System.out.println("[ATENCIÓN] Esta acción es PERMANENTE e irreversible.");
         System.out.println("¿Confirma la baja permanente de " + paciente.getNombreCompleto() + "? (S/N): ");
-        String confirmacion = teclado.nextLine().toUpperCase();
+        String confirmacion = scanner.nextLine().trim().toUpperCase();
 
         if (!confirmacion.equals("S")) {
             System.out.println("Operación cancelada.");
@@ -900,7 +929,7 @@ public class Main {
                 admin.darBajaPermanentePaciente(paciente);
             } else {
                 paciente.setEstado("BAJA_PERMANENTE");
-                paciente.setPerteneceSistema(false);
+                paciente.setActivo(false);
                 System.out.println("Baja PERMANENTE aplicada.");
             }
 
@@ -927,7 +956,7 @@ public class Main {
         if (paciente == null) return;
 
         System.out.println("¿Confirma la baja temporal de " + paciente.getNombreCompleto() + "? (S/N): ");
-        String confirmacion = teclado.nextLine().trim().toUpperCase();
+        String confirmacion = scanner.nextLine().trim().toUpperCase();
 
         if (!confirmacion.equals("S")) {
             System.out.println("Operación cancelada.");
@@ -966,7 +995,7 @@ public class Main {
 
         for (Paciente p : pacientes) {
             System.out.println("HC Nº: " + p.getNumeroHistoriaClinica()
-                + " | DNI: "    + p.getDni()
+                + " | DNI: " + p.getDni()
                 + " | Nombre: " + p.getNombreCompleto()
                 + " | Estado: " + p.getEstado());
         }
@@ -981,7 +1010,7 @@ public class Main {
 
         System.out.println("\n--- BUSCAR PACIENTE POR DNI ---");
         System.out.print("DNI del paciente: ");
-        String dni = teclado.nextLine().trim().toUpperCase();
+        String dni = scanner.nextLine().trim().toUpperCase();
 
         for (Paciente p : pacientes) {
             if (p.getDni().equals(dni)) {
@@ -1013,7 +1042,7 @@ public class Main {
         if (paciente == null) return;
 
         System.out.print("Concepto de la factura: ");
-        String concepto = teclado.nextLine().trim();
+        String concepto = scanner.nextLine().trim();
 
         if (concepto.isEmpty()) {
             System.out.println("[ERROR] El concepto no puede estar vacío.");
@@ -1021,7 +1050,7 @@ public class Main {
         }
 
         System.out.print("Importe (€): ");
-        String importeStr = teclado.nextLine().trim();
+        String importeStr = scanner.nextLine().trim();
 
         double importe;
         try {
@@ -1069,10 +1098,10 @@ public class Main {
         if (paciente == null) return;
 
         System.out.print("Concepto del procedimiento: ");
-        String concepto = teclado.nextLine().trim();
+        String concepto = scanner.nextLine().trim();
 
         System.out.print("Importe (€): ");
-        String importeStr = teclado.nextLine().trim();
+        String importeStr = scanner.nextLine().trim();
 
         double importe;
         try {
@@ -1100,7 +1129,7 @@ public class Main {
     private static Paciente buscarPacienteInteractivo() {
 
         System.out.print("DNI del paciente (o '0' para cancelar): ");
-        String dni = teclado.nextLine().trim().toUpperCase();
+        String dni = scanner.nextLine().trim().toUpperCase();
 
         if (dni.equals("0")) {
             System.out.println("Operación cancelada.");
@@ -1169,7 +1198,7 @@ public class Main {
      * @return LocalDate válido, o null si el formato era incorrecto
      */
     private static LocalDate leerFecha() {
-        String entrada = teclado.nextLine().trim();
+        String entrada = scanner.nextLine().trim();
 
         try {
             String[] partes = entrada.split("/");
@@ -1198,7 +1227,7 @@ public class Main {
      * @return El número entero leído, o -1 si hubo error
      */
     private static int leerEntero() {
-        String entrada = teclado.nextLine().trim();
+        String entrada = scanner.nextLine().trim();
         try {
             return Integer.parseInt(entrada);
         } catch (NumberFormatException e) {
@@ -1220,17 +1249,19 @@ public class Main {
      *   - Permite guardar el estado completo incluyendo el HistorialMedico (composición)
      *   - Es el método más directo dado el diseño del proyecto
      * 
-     * Se guardan cuatro ficheros:
-     *   - pacientes.dat   → List<Paciente>
-     *   - medicos.dat     → List<Medico>
-     *   - admins.dat      → List<PersonalAdmin>
-     *   - facturacion.dat → List<AreaFacturacion>
+     * Se guardan tres ficheros:
+     *   - pacientes.dat  → Lista<Paciente>
+     *   - medicos.dat    → Lista<Medico>
+     *   - admins.dat     → Lista<PersonalAdmin>
+     *   - contador.dat   → int con el último número de HC asignado
      */
+    @SuppressWarnings("unchecked")
     private static void guardarDatos() {
-        guardarLista(pacientes,   RUTA_PACIENTES);
-        guardarLista(medicos,     RUTA_MEDICOS);
-        guardarLista(admins,      RUTA_ADMINS);
-        guardarLista(facturacion, RUTA_FACTURACION);
+
+        guardarLista(pacientes, RUTA_PACIENTES);
+        guardarLista(medicos,   RUTA_MEDICOS);
+        guardarLista(admins,    RUTA_ADMINS);
+        guardarContador();
     }
 
     /**
@@ -1247,23 +1278,27 @@ public class Main {
         }
     }
 
+
     /**
      * Carga todos los datos desde los ficheros al arrancar el sistema.
      * 
      * Si los ficheros no existen (primera ejecución), inicializa los datos de ejemplo
      * para que el sistema no arranque completamente vacío.
      */
+    
     private static void cargarDatos() {
 
-        List<Paciente>        pacientesCargados  = cargarLista(RUTA_PACIENTES);
-        List<Medico>          medicosCargados    = cargarLista(RUTA_MEDICOS);
-        List<PersonalAdmin>   adminsCargados     = cargarLista(RUTA_ADMINS);
-        List<AreaFacturacion> facturacionCargada = cargarLista(RUTA_FACTURACION);
+        // Intentamos cargar cada fichero
+        List<Paciente>      pacientesCargados = cargarLista(RUTA_PACIENTES);
+        List<Medico>        medicosCargados   = cargarLista(RUTA_MEDICOS);
+        List<PersonalAdmin> adminsCargados    = cargarLista(RUTA_ADMINS);
 
-        if (pacientesCargados  != null) pacientes   = pacientesCargados;
-        if (medicosCargados    != null) medicos     = medicosCargados;
-        if (adminsCargados     != null) admins      = adminsCargados;
-        if (facturacionCargada != null) facturacion = facturacionCargada;
+        if (pacientesCargados != null) pacientes = pacientesCargados;
+        if (medicosCargados   != null) medicos   = medicosCargados;
+        if (adminsCargados    != null) admins    = adminsCargados;
+
+        // Cargamos el contador de HC
+        cargarContador();
 
         // Si es la primera ejecución (ficheros vacíos), cargamos datos de ejemplo
         if (pacientes.isEmpty() && medicos.isEmpty() && admins.isEmpty()) {
@@ -1299,6 +1334,7 @@ public class Main {
             return null;
         }
     }
+
 
     /**
      * Inicializa datos de ejemplo para la primera ejecución del sistema.
@@ -1337,8 +1373,9 @@ public class Main {
                 "99887766D", "Pedro Sánchez Gómez",
                 LocalDate.of(1975, 6, 8), "M",
                 "Calle Mayor 10, Zaragoza", 612345678,
-                "pedro.sanchez@email.com", 698765432, ""
+                "pedro.sanchez@email.com", 698765432
             );
+            // Añadimos algunos datos al historial para que tenga contenido
             paciente1.getHistorial().agregarEnfermedadPrevia("Gastritis");
             paciente1.getHistorial().agregarAlergia("Penicilina");
             pacientes.add(paciente1);
@@ -1347,7 +1384,7 @@ public class Main {
                 "55443322E", "Laura Fernández Díaz",
                 LocalDate.of(1992, 11, 25), "F",
                 "Av. Goya 45, Zaragoza", 623456789,
-                "laura.fernandez@email.com", 677654321, ""
+                "laura.fernandez@email.com", 677654321
             );
             pacientes.add(paciente2);
 
