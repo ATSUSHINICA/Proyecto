@@ -126,9 +126,19 @@ class AreaFacturacion {
     - static Map<Integer, List<AreaFacturacion>> facturasPorPaciente
     - static int contadorFacturas
     --
+<<<<<<< HEAD
     + AreaFacturacion(String, double, LocalDate)
     + void generarFactura(Paciente) throws EstadoPacienteException
     + static List<AreaFacturacion> buscarFacturasPorPaciente(int)
+=======
+    - "List<AreaFacturacion>" facturas
+    - "Map<Integer, List<AreaFacturacion>>" facturasPorPaciente
+    - int contadorFacturas
+    --
+    + void generarFactura(Paciente)  ' throws EstadoPacienteException
+    + static "List<AreaFacturacion>" buscarFacturasPorPaciente(int)
+    + static void notificarProcedimiento(Paciente, String)
+>>>>>>> a3ed0a224dbb0bbea806e3f2398fa0afeb7766e3
     + static void notificarProcedimiento(Paciente, String, double)
     + static void listarTodasFacturas()
     + static void mostrarFacturasDePaciente(Paciente)
